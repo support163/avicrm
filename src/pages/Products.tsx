@@ -21,14 +21,14 @@ const industryIcons = {
 };
 
 const categoryColors: Record<string, string> = {
-  'Check Valves': 'bg-blue-100 text-blue-700',
-  'Relief Valves': 'bg-amber-100 text-amber-700',
-  'Servo Valves': 'bg-purple-100 text-purple-700',
-  'Shutoff Valves': 'bg-red-100 text-red-700',
-  'Proportional Valves': 'bg-emerald-100 text-emerald-700',
-  'Pressure Regulators': 'bg-cyan-100 text-cyan-700',
-  'Flow Control Valves': 'bg-indigo-100 text-indigo-700',
-  'Selector Valves': 'bg-pink-100 text-pink-700',
+  'Ball Valves': 'bg-blue-100 text-blue-700',
+  'Drain Valves': 'bg-amber-100 text-amber-700',
+  'Float Valves': 'bg-cyan-100 text-cyan-700',
+  'Check Valves': 'bg-emerald-100 text-emerald-700',
+  'Pressure Vent Valves': 'bg-purple-100 text-purple-700',
+  'Hydraulic Valves': 'bg-red-100 text-red-700',
+  'Fill Caps': 'bg-indigo-100 text-indigo-700',
+  'Services': 'bg-pink-100 text-pink-700',
 };
 
 export default function Products() {
