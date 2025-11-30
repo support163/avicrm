@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import {
   DollarSign,
   Users,
@@ -197,12 +198,12 @@ export default function Dashboard() {
             <h2 className="text-lg font-semibold text-slate-900">
               Recent Opportunities
             </h2>
-            <a
-              href="/opportunities"
+            <Link
+              to="/opportunities"
               className="text-sm text-aerospace-600 hover:text-aerospace-700 font-medium"
             >
               View all →
-            </a>
+            </Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
@@ -256,12 +257,12 @@ export default function Dashboard() {
           <h2 className="text-lg font-semibold text-slate-900">
             Top Customers
           </h2>
-          <a
-            href="/customers"
+          <Link
+            to="/customers"
             className="text-sm text-aerospace-600 hover:text-aerospace-700 font-medium"
           >
             View all →
-          </a>
+          </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {customers.slice(0, 4).map((customer) => (
