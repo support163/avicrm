@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@theme {
+  --color-aerospace-50: #f0f9ff;
+  --color-aerospace-100: #e0f2fe;
+  --color-aerospace-200: #bae6fd;
+  --color-aerospace-300: #7dd3fc;
+  --color-aerospace-400: #38bdf8;
+  --color-aerospace-500: #0ea5e9;
+  --color-aerospace-600: #0284c7;
+  --color-aerospace-700: #0369a1;
+  --color-aerospace-800: #075985;
+  --color-aerospace-900: #0c4a6e;
+  --color-aerospace-950: #082f49;
+}
+
+@layer base {
+  body {
+    @apply bg-slate-50 text-slate-900 antialiased;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-xl shadow-sm border border-slate-200 p-6;
+  }
+
+  .btn-primary {
+    @apply bg-aerospace-600 hover:bg-aerospace-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  }
+
+  .input {
+    @apply w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-aerospace-500 focus:border-transparent transition-all duration-200;
+  }
+
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-airplane {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .badge-drone {
+    @apply bg-purple-100 text-purple-800;
+  }
+
+  .badge-helicopter {
+    @apply bg-emerald-100 text-emerald-800;
+  }
+}
