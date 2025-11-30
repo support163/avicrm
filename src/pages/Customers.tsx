@@ -36,27 +36,27 @@ const statusColors = {
 };
 
 // Aircraft data mapped to customers
-const customerAircraft: Record<string, { aircraft: string; valveSupplier: string }> = {
-  '1': { aircraft: '737 MAX, 747, 767, 777, 787 Dreamliner', valveSupplier: 'AutoValve' },
-  '2': { aircraft: 'A319, A320, A321, A320neo, A330, A350, A380', valveSupplier: 'AutoValve' },
-  '3': { aircraft: 'E170, E190, E195, E2 Series, Phenom 100/300, Praetor 500/600', valveSupplier: 'AutoValve' },
-  '4': { aircraft: 'Global 7500, Global 8000, Challenger 350, Challenger 650', valveSupplier: 'AutoValve' },
-  '5': { aircraft: 'C919, ARJ21', valveSupplier: 'Prospect' },
-  '6': { aircraft: 'G400, G500, G600, G650, G700, G800', valveSupplier: 'AutoValve' },
-  '7': { aircraft: 'Falcon 6X, Falcon 8X, Falcon 10X', valveSupplier: 'AutoValve' },
-  '8': { aircraft: 'Citation CJ Series, Citation Latitude, Citation Longitude, Caravan', valveSupplier: 'AutoValve' },
-  '9': { aircraft: 'H125, H145, H160, Tiger, NH90', valveSupplier: 'AutoValve' },
-  '10': { aircraft: 'Bell 407, Bell 429, Bell 505, V-22 Osprey, V-280 Valor', valveSupplier: 'AutoValve' },
-  '11': { aircraft: 'UH-60 Black Hawk, CH-53K King Stallion, S-76, S-92', valveSupplier: 'AutoValve' },
-  '12': { aircraft: 'AW109, AW139, AW169, AW609, AW101, AW159 Wildcat', valveSupplier: 'AutoValve' },
-  '13': { aircraft: 'F-35 Lightning II, F-16 Fighting Falcon, C-130J Super Hercules', valveSupplier: 'AutoValve' },
-  '14': { aircraft: 'RQ-4 Global Hawk, MQ-4C Triton, B-21 Raider', valveSupplier: 'AutoValve' },
-  '15': { aircraft: 'MQ-9 Reaper, MQ-9B SkyGuardian, MQ-1C Gray Eagle, Avenger', valveSupplier: 'AutoValve' },
-  '16': { aircraft: 'Ghost, Altius-600, Altius-700, YFQ-44A (CCA)', valveSupplier: 'AutoValve' },
-  '17': { aircraft: 'XQ-58A Valkyrie, BQM-167 Target Drones', valveSupplier: 'Prospect' },
-  '18': { aircraft: 'Switchblade 300/600, RQ-11 Raven, RQ-20 Puma', valveSupplier: 'AutoValve' },
-  '19': { aircraft: 'Bayraktar TB2, Bayraktar TB3, Bayraktar Akıncı', valveSupplier: 'AutoValve' },
-  '20': { aircraft: 'Heron, Heron TP (Eitan), Harop', valveSupplier: 'Competitor' },
+const customerAircraft: Record<string, { aircraft: string[]; valveSupplier: string }> = {
+  '1': { aircraft: ['737 MAX', '747', '767', '777', '787 Dreamliner'], valveSupplier: 'AutoValve' },
+  '2': { aircraft: ['A319', 'A320', 'A321', 'A320neo', 'A330', 'A350', 'A380'], valveSupplier: 'AutoValve' },
+  '3': { aircraft: ['E170', 'E190', 'E195', 'E2 Series', 'Phenom 100/300', 'Praetor 500/600'], valveSupplier: 'AutoValve' },
+  '4': { aircraft: ['Global 7500', 'Global 8000', 'Challenger 350', 'Challenger 650'], valveSupplier: 'AutoValve' },
+  '5': { aircraft: ['C919', 'ARJ21'], valveSupplier: 'Prospect' },
+  '6': { aircraft: ['G400', 'G500', 'G600', 'G650', 'G700', 'G800'], valveSupplier: 'AutoValve' },
+  '7': { aircraft: ['Falcon 6X', 'Falcon 8X', 'Falcon 10X'], valveSupplier: 'AutoValve' },
+  '8': { aircraft: ['Citation CJ Series', 'Citation Latitude', 'Citation Longitude', 'Caravan'], valveSupplier: 'AutoValve' },
+  '9': { aircraft: ['H125', 'H145', 'H160', 'Tiger', 'NH90'], valveSupplier: 'AutoValve' },
+  '10': { aircraft: ['Bell 407', 'Bell 429', 'Bell 505', 'V-22 Osprey', 'V-280 Valor'], valveSupplier: 'AutoValve' },
+  '11': { aircraft: ['UH-60 Black Hawk', 'CH-53K King Stallion', 'S-76', 'S-92'], valveSupplier: 'AutoValve' },
+  '12': { aircraft: ['AW109', 'AW139', 'AW169', 'AW609', 'AW101', 'AW159 Wildcat'], valveSupplier: 'AutoValve' },
+  '13': { aircraft: ['F-35 Lightning II', 'F-16 Fighting Falcon', 'C-130J Super Hercules'], valveSupplier: 'AutoValve' },
+  '14': { aircraft: ['RQ-4 Global Hawk', 'MQ-4C Triton', 'B-21 Raider'], valveSupplier: 'AutoValve' },
+  '15': { aircraft: ['MQ-9 Reaper', 'MQ-9B SkyGuardian', 'MQ-1C Gray Eagle', 'Avenger'], valveSupplier: 'AutoValve' },
+  '16': { aircraft: ['Ghost', 'Altius-600', 'Altius-700', 'YFQ-44A (CCA)'], valveSupplier: 'AutoValve' },
+  '17': { aircraft: ['XQ-58A Valkyrie', 'BQM-167 Target Drones'], valveSupplier: 'Prospect' },
+  '18': { aircraft: ['Switchblade 300/600', 'RQ-11 Raven', 'RQ-20 Puma'], valveSupplier: 'AutoValve' },
+  '19': { aircraft: ['Bayraktar TB2', 'Bayraktar TB3', 'Bayraktar Akıncı'], valveSupplier: 'AutoValve' },
+  '20': { aircraft: ['Heron', 'Heron TP (Eitan)', 'Harop'], valveSupplier: 'Competitor' },
 };
 
 export default function Customers() {
@@ -68,11 +68,12 @@ export default function Customers() {
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
   const filteredCustomers = customers.filter((customer) => {
+    const aircraftList = customerAircraft[customer.id]?.aircraft || [];
     const matchesSearch =
       customer.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.contactName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      (customerAircraft[customer.id]?.aircraft.toLowerCase().includes(searchTerm.toLowerCase()));
+      aircraftList.some(ac => ac.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesIndustry = filterIndustry === 'all' || customer.industry === filterIndustry;
     return matchesSearch && matchesIndustry;
   });
@@ -196,7 +197,7 @@ export default function Customers() {
               <tbody className="divide-y divide-slate-100">
                 {filteredCustomers.map((customer) => {
                   const IndustryIcon = industryIcons[customer.industry];
-                  const aircraftData = customerAircraft[customer.id] || { aircraft: '-', valveSupplier: '-' };
+                  const aircraftData = customerAircraft[customer.id] || { aircraft: [], valveSupplier: '-' };
                   return (
                     <tr
                       key={customer.id}
@@ -228,9 +229,16 @@ export default function Customers() {
                         </span>
                       </td>
                       <td className="px-6 py-4">
-                        <p className="text-sm text-slate-700 max-w-xs truncate" title={aircraftData.aircraft}>
-                          {aircraftData.aircraft}
-                        </p>
+                        <div className="space-y-1">
+                          {aircraftData.aircraft.map((ac, index) => (
+                            <div
+                              key={index}
+                              className="text-sm text-slate-700 px-2 py-0.5 bg-slate-50 rounded inline-block mr-1 mb-1"
+                            >
+                              {ac}
+                            </div>
+                          ))}
+                        </div>
                       </td>
                       <td className="px-6 py-4">
                         <span
@@ -270,7 +278,7 @@ export default function Customers() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCustomers.map((customer) => {
             const IndustryIcon = industryIcons[customer.industry];
-            const aircraftData = customerAircraft[customer.id] || { aircraft: '-', valveSupplier: '-' };
+            const aircraftData = customerAircraft[customer.id] || { aircraft: [], valveSupplier: '-' };
             return (
               <div
                 key={customer.id}
@@ -298,8 +306,17 @@ export default function Customers() {
                 </div>
 
                 <div className="mt-4 p-3 rounded-lg bg-slate-50">
-                  <p className="text-xs text-slate-500 uppercase tracking-wider mb-1">Aircraft / Systems</p>
-                  <p className="text-sm text-slate-700 line-clamp-2">{aircraftData.aircraft}</p>
+                  <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Aircraft / Systems</p>
+                  <div className="flex flex-wrap gap-1">
+                    {aircraftData.aircraft.map((ac, index) => (
+                      <span
+                        key={index}
+                        className="text-xs text-slate-700 px-2 py-0.5 bg-white rounded border border-slate-200"
+                      >
+                        {ac}
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="mt-3 space-y-2">
@@ -395,10 +412,17 @@ export default function Customers() {
                 </div>
 
                 <div className="p-4 rounded-xl bg-slate-50">
-                  <p className="text-xs text-slate-500 uppercase tracking-wider">Aircraft / Systems</p>
-                  <p className="mt-1 text-sm text-slate-700">
-                    {customerAircraft[selectedCustomer.id]?.aircraft || '-'}
-                  </p>
+                  <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Aircraft / Systems</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {(customerAircraft[selectedCustomer.id]?.aircraft || []).map((ac, index) => (
+                      <span
+                        key={index}
+                        className="text-sm text-slate-700 px-2.5 py-1 bg-white rounded-lg border border-slate-200"
+                      >
+                        {ac}
+                      </span>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="p-4 rounded-xl bg-slate-50">
