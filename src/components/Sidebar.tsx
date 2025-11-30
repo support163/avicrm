@@ -25,7 +25,7 @@ export default function Sidebar() {
           <Plane className="w-6 h-6" />
         </div>
         <div>
-          <h1 className="font-bold text-lg tracking-tight">AeroValve</h1>
+          <h1 className="font-bold text-lg tracking-tight">AutoValve</h1>
           <p className="text-xs text-aerospace-300">CRM System</p>
         </div>
       </div>
@@ -68,7 +68,7 @@ export default function Sidebar() {
             AV
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-sm font-medium truncate">AeroValve Inc.</p>
+            <p className="text-sm font-medium truncate">AutoValve Inc.</p>
             <p className="text-xs text-aerospace-400 truncate">Enterprise License</p>
           </div>
         </div>

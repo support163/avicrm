@@ -138,7 +138,7 @@ export default function Settings() {
                   <label className="block text-sm font-medium text-slate-700 mb-2">
                     Company Name
                   </label>
-                  <input type="text" defaultValue="AeroValve Inc." className="input" />
+                  <input type="text" defaultValue="AutoValve Inc." className="input" />
                 </div>
 
                 <div className="grid grid-cols-2 gap-6">
