@@ -1,101 +1,250 @@
 import type { Customer, Product, Opportunity, DashboardStats } from '../types';
 
 export const customers: Customer[] = [
+  // Commercial Aircraft Manufacturers
   {
     id: '1',
-    companyName: 'Boeing Commercial',
+    companyName: 'Boeing Commercial Airplanes',
     contactName: 'Sarah Mitchell',
     email: 'sarah.mitchell@boeing.com',
     phone: '+1 (206) 555-0142',
     industry: 'airplane',
     address: '100 N Riverside, Chicago, IL 60606',
     createdAt: '2024-01-15',
-    notes: 'Key account - requires quarterly reviews',
+    notes: 'Key account - 737 MAX, 777, 787 Dreamliner programs',
     status: 'active'
   },
   {
     id: '2',
-    companyName: 'DJI Enterprise',
-    contactName: 'Wei Chen',
-    email: 'w.chen@dji.com',
-    phone: '+86 755 2678 5678',
-    industry: 'drone',
-    address: 'DJI Sky City, Shenzhen, China',
-    createdAt: '2024-02-20',
-    notes: 'Growing drone manufacturing operations',
+    companyName: 'Airbus Commercial Aircraft',
+    contactName: 'François Martin',
+    email: 'f.martin@airbus.com',
+    phone: '+33 5 61 93 33 33',
+    industry: 'airplane',
+    address: '1 Rond-Point Maurice Bellonte, Toulouse, France',
+    createdAt: '2024-01-20',
+    notes: 'A320neo family, A350, A380 programs - major European account',
     status: 'active'
   },
   {
     id: '3',
-    companyName: 'Airbus Helicopters',
-    contactName: 'Jean-Pierre Dubois',
-    email: 'jp.dubois@airbus.com',
-    phone: '+33 5 62 74 74 74',
-    industry: 'helicopter',
-    address: 'Aéroport de Marignane, France',
-    createdAt: '2024-03-10',
-    notes: 'European defense contracts',
-    status: 'active'
-  },
-  {
-    id: '4',
-    companyName: 'Lockheed Martin',
-    contactName: 'Robert Hayes',
-    email: 'robert.hayes@lmco.com',
-    phone: '+1 (301) 555-0198',
-    industry: 'airplane',
-    address: '6801 Rockledge Dr, Bethesda, MD',
-    createdAt: '2024-01-22',
-    notes: 'Defense aerospace programs',
-    status: 'active'
-  },
-  {
-    id: '5',
-    companyName: 'Skydio Inc',
-    contactName: 'Emily Frost',
-    email: 'emily@skydio.com',
-    phone: '+1 (650) 555-0177',
-    industry: 'drone',
-    address: '114 Hazel Ave, Redwood City, CA',
-    createdAt: '2024-04-05',
-    notes: 'Autonomous drone technology leader',
-    status: 'prospect'
-  },
-  {
-    id: '6',
-    companyName: 'Bell Textron',
-    contactName: 'Michael Torres',
-    email: 'm.torres@bellflight.com',
-    phone: '+1 (817) 555-0156',
-    industry: 'helicopter',
-    address: '3255 Bell Flight Blvd, Fort Worth, TX',
-    createdAt: '2024-02-14',
-    notes: 'V-22 Osprey component supplier',
-    status: 'active'
-  },
-  {
-    id: '7',
     companyName: 'Embraer S.A.',
     contactName: 'Ana Costa',
     email: 'ana.costa@embraer.com',
     phone: '+55 12 3927 5858',
     industry: 'airplane',
     address: 'São José dos Campos, Brazil',
-    createdAt: '2024-03-28',
-    notes: 'Regional jet manufacturer',
+    createdAt: '2024-02-10',
+    notes: 'E-Jet E2 series, Phenom and Praetor business jets',
+    status: 'active'
+  },
+  {
+    id: '4',
+    companyName: 'Bombardier Aviation',
+    contactName: 'Marc Tremblay',
+    email: 'm.tremblay@bombardier.com',
+    phone: '+1 (514) 555-0188',
+    industry: 'airplane',
+    address: '400 Côte-Vertu Road West, Montreal, QC, Canada',
+    createdAt: '2024-02-15',
+    notes: 'Global 7500/8000, Challenger series business jets',
+    status: 'active'
+  },
+  {
+    id: '5',
+    companyName: 'COMAC',
+    contactName: 'Li Wei',
+    email: 'li.wei@comac.cc',
+    phone: '+86 21 2032 0000',
+    industry: 'airplane',
+    address: 'Shanghai, China',
+    createdAt: '2024-03-01',
+    notes: 'C919 narrow-body, ARJ21 regional jet - growing Chinese market',
+    status: 'prospect'
+  },
+  // Business Jet Manufacturers
+  {
+    id: '6',
+    companyName: 'Gulfstream Aerospace',
+    contactName: 'David Thompson',
+    email: 'd.thompson@gulfstream.com',
+    phone: '+1 (912) 555-0145',
+    industry: 'airplane',
+    address: '500 Gulfstream Road, Savannah, GA',
+    createdAt: '2024-01-25',
+    notes: 'G700, G650, G500/G600 ultra-long range jets',
+    status: 'active'
+  },
+  {
+    id: '7',
+    companyName: 'Dassault Aviation',
+    contactName: 'Pierre Lefebvre',
+    email: 'p.lefebvre@dassault-aviation.com',
+    phone: '+33 1 47 11 40 00',
+    industry: 'airplane',
+    address: '78 Quai Marcel Dassault, Saint-Cloud, France',
+    createdAt: '2024-02-05',
+    notes: 'Falcon 8X, 6X, 10X business jets - European defense contracts',
     status: 'active'
   },
   {
     id: '8',
-    companyName: 'Parrot Drones',
-    contactName: 'Marie Laurent',
-    email: 'marie.laurent@parrot.com',
-    phone: '+33 1 48 03 60 60',
+    companyName: 'Textron Aviation (Cessna)',
+    contactName: 'Jennifer Adams',
+    email: 'j.adams@txtav.com',
+    phone: '+1 (316) 555-0167',
+    industry: 'airplane',
+    address: 'One Cessna Boulevard, Wichita, KS',
+    createdAt: '2024-02-20',
+    notes: 'Citation series jets, Caravan turboprops',
+    status: 'active'
+  },
+  // Helicopter Manufacturers
+  {
+    id: '9',
+    companyName: 'Airbus Helicopters',
+    contactName: 'Jean-Pierre Dubois',
+    email: 'jp.dubois@airbus.com',
+    phone: '+33 5 62 74 74 74',
+    industry: 'helicopter',
+    address: 'Aéroport de Marignane, France',
+    createdAt: '2024-01-18',
+    notes: 'H125, H145, H160, Tiger, NH90 programs',
+    status: 'active'
+  },
+  {
+    id: '10',
+    companyName: 'Bell Textron',
+    contactName: 'Michael Torres',
+    email: 'm.torres@bellflight.com',
+    phone: '+1 (817) 555-0156',
+    industry: 'helicopter',
+    address: '3255 Bell Flight Blvd, Fort Worth, TX',
+    createdAt: '2024-01-22',
+    notes: 'Bell 407/429/505, V-280 Valor tiltrotor, V-22 Osprey',
+    status: 'active'
+  },
+  {
+    id: '11',
+    companyName: 'Sikorsky (Lockheed Martin)',
+    contactName: 'Robert Hayes',
+    email: 'robert.hayes@lmco.com',
+    phone: '+1 (203) 555-0198',
+    industry: 'helicopter',
+    address: '6900 Main Street, Stratford, CT',
+    createdAt: '2024-02-01',
+    notes: 'UH-60 Black Hawk, CH-53K King Stallion, S-76/S-92 commercial',
+    status: 'active'
+  },
+  {
+    id: '12',
+    companyName: 'Leonardo Helicopters',
+    contactName: 'Marco Rossi',
+    email: 'm.rossi@leonardo.com',
+    phone: '+39 06 324731',
+    industry: 'helicopter',
+    address: 'Piazza Monte Grappa, Rome, Italy',
+    createdAt: '2024-02-12',
+    notes: 'AW139, AW169, AW609 tiltrotor, AW101 military',
+    status: 'active'
+  },
+  // Defense/Military Manufacturers
+  {
+    id: '13',
+    companyName: 'Lockheed Martin Aeronautics',
+    contactName: 'Karen Williams',
+    email: 'k.williams@lmco.com',
+    phone: '+1 (301) 555-0134',
+    industry: 'airplane',
+    address: '6801 Rockledge Dr, Bethesda, MD',
+    createdAt: '2024-01-10',
+    notes: 'F-35 Lightning II, F-16, C-130J programs',
+    status: 'active'
+  },
+  {
+    id: '14',
+    companyName: 'Northrop Grumman',
+    contactName: 'James Peterson',
+    email: 'j.peterson@ngc.com',
+    phone: '+1 (703) 555-0189',
     industry: 'drone',
-    address: '174 Quai de Jemmapes, Paris, France',
-    createdAt: '2024-05-12',
-    notes: 'Consumer and professional drones',
-    status: 'inactive'
+    address: '2980 Fairview Park Drive, Falls Church, VA',
+    createdAt: '2024-02-08',
+    notes: 'RQ-4 Global Hawk, MQ-4C Triton, B-21 Raider',
+    status: 'active'
+  },
+  // UAS/Drone Manufacturers
+  {
+    id: '15',
+    companyName: 'General Atomics Aeronautical',
+    contactName: 'Steven Clark',
+    email: 's.clark@ga-asi.com',
+    phone: '+1 (858) 555-0177',
+    industry: 'drone',
+    address: '14200 Kirkham Way, Poway, CA',
+    createdAt: '2024-01-28',
+    notes: 'MQ-9 Reaper, MQ-9B SkyGuardian, Gray Eagle - major MALE UAS supplier',
+    status: 'active'
+  },
+  {
+    id: '16',
+    companyName: 'Anduril Industries',
+    contactName: 'Emily Chen',
+    email: 'e.chen@anduril.com',
+    phone: '+1 (949) 555-0166',
+    industry: 'drone',
+    address: '2272 Michelson Drive, Irvine, CA',
+    createdAt: '2024-03-15',
+    notes: 'Ghost, Altius autonomous systems, CCA prototypes - emerging defense tech',
+    status: 'active'
+  },
+  {
+    id: '17',
+    companyName: 'Kratos Defense',
+    contactName: 'Brian Miller',
+    email: 'b.miller@kratosdefense.com',
+    phone: '+1 (858) 555-0144',
+    industry: 'drone',
+    address: '10680 Treena Street, San Diego, CA',
+    createdAt: '2024-03-20',
+    notes: 'XQ-58A Valkyrie, target drones, low-cost attritable aircraft',
+    status: 'prospect'
+  },
+  {
+    id: '18',
+    companyName: 'AeroVironment',
+    contactName: 'Lisa Anderson',
+    email: 'l.anderson@avinc.com',
+    phone: '+1 (805) 555-0155',
+    industry: 'drone',
+    address: '800 Royal Oaks Drive, Monrovia, CA',
+    createdAt: '2024-02-25',
+    notes: 'Switchblade loitering munitions, Raven, Puma tactical ISR',
+    status: 'active'
+  },
+  {
+    id: '19',
+    companyName: 'Baykar Technologies',
+    contactName: 'Ahmet Yilmaz',
+    email: 'a.yilmaz@baykartech.com',
+    phone: '+90 212 555 0188',
+    industry: 'drone',
+    address: 'Istanbul, Turkey',
+    createdAt: '2024-04-01',
+    notes: 'Bayraktar TB2, Akıncı MALE UAS - high export demand',
+    status: 'active'
+  },
+  {
+    id: '20',
+    companyName: 'Israel Aerospace Industries',
+    contactName: 'David Cohen',
+    email: 'd.cohen@iai.co.il',
+    phone: '+972 3 935 8111',
+    industry: 'drone',
+    address: 'Ben Gurion International Airport, Israel',
+    createdAt: '2024-03-10',
+    notes: 'Heron, Eitan (Heron TP), Harop loitering munition',
+    status: 'active'
   }
 ];
 
@@ -451,11 +600,12 @@ export const products: Product[] = [
 ];
 
 export const opportunities: Opportunity[] = [
+  // Commercial Aircraft
   {
     id: '1',
-    title: 'Boeing 787 Fuel System Upgrade',
+    title: 'Boeing 787 Dreamliner Fuel System Upgrade',
     customerId: '1',
-    customerName: 'Boeing Commercial',
+    customerName: 'Boeing Commercial Airplanes',
     products: [
       { productId: '9', productName: 'AV-500 Poppet Check Valve', quantity: 200, price: 1150 },
       { productId: '3', productName: 'AV-200 Flow Control Ball Valve', quantity: 50, price: 2650 }
@@ -465,48 +615,152 @@ export const opportunities: Opportunity[] = [
     probability: 75,
     expectedCloseDate: '2024-08-15',
     createdAt: '2024-03-01',
-    notes: 'Final pricing discussion scheduled for next week',
+    notes: 'Final pricing discussion for 787-9 and 787-10 variants',
     industry: 'airplane'
   },
   {
     id: '2',
-    title: 'DJI Matrice Series Valve Kit',
+    title: 'Airbus A320neo Family Valve Package',
     customerId: '2',
-    customerName: 'DJI Enterprise',
+    customerName: 'Airbus Commercial Aircraft',
     products: [
-      { productId: '5', productName: 'AV-300 Poppet Drain Valve', quantity: 5000, price: 650 },
-      { productId: '12', productName: 'AV-700 In-Line Pressure Vent', quantity: 3000, price: 1250 }
+      { productId: '1', productName: 'AV-100 Ball Shut-Off Valve', quantity: 500, price: 1850 },
+      { productId: '13', productName: 'AV-750 Tank Mount Vent Valve', quantity: 300, price: 1850 }
     ],
     stage: 'proposal',
-    value: 7000000,
-    probability: 50,
+    value: 1480000,
+    probability: 60,
     expectedCloseDate: '2024-09-30',
     createdAt: '2024-04-12',
-    notes: 'Proposal submitted, awaiting feedback from engineering team',
-    industry: 'drone'
+    notes: 'A319neo, A320neo, A321neo fuel system components',
+    industry: 'airplane'
   },
   {
     id: '3',
-    title: 'Airbus H175 Hydraulic Package',
+    title: 'Embraer E2 Series Production',
     customerId: '3',
-    customerName: 'Airbus Helicopters',
+    customerName: 'Embraer S.A.',
     products: [
-      { productId: '14', productName: 'AV-800 Hydraulic Regulator Valve', quantity: 100, price: 3450 },
-      { productId: '15', productName: 'AV-850 Relief/Dump Valve', quantity: 150, price: 2850 }
+      { productId: '11', productName: 'AV-600 Split Butterfly Check Valve', quantity: 100, price: 1650 },
+      { productId: '17', productName: 'AV-1000 Gravity Fuel Fill Cap', quantity: 200, price: 485 }
     ],
     stage: 'qualified',
-    value: 772500,
-    probability: 40,
-    expectedCloseDate: '2024-11-20',
+    value: 262000,
+    probability: 50,
+    expectedCloseDate: '2024-10-15',
     createdAt: '2024-05-08',
-    notes: 'Technical evaluation in progress',
-    industry: 'helicopter'
+    notes: 'E190-E2 and E195-E2 regional jet program',
+    industry: 'airplane'
   },
   {
     id: '4',
-    title: 'F-35 Component Supply Contract',
+    title: 'Bombardier Global 7500/8000 Fuel System',
     customerId: '4',
-    customerName: 'Lockheed Martin',
+    customerName: 'Bombardier Aviation',
+    products: [
+      { productId: '3', productName: 'AV-200 Flow Control Ball Valve', quantity: 80, price: 2650 },
+      { productId: '8', productName: 'AV-450 Guided Float Valve', quantity: 60, price: 1350 }
+    ],
+    stage: 'closed_won',
+    value: 293000,
+    probability: 100,
+    expectedCloseDate: '2024-06-01',
+    createdAt: '2024-01-20',
+    notes: 'Long-range business jet valve supply contract signed',
+    industry: 'airplane'
+  },
+  {
+    id: '5',
+    title: 'Gulfstream G700 Hydraulic Package',
+    customerId: '6',
+    customerName: 'Gulfstream Aerospace',
+    products: [
+      { productId: '14', productName: 'AV-800 Hydraulic Regulator Valve', quantity: 50, price: 3450 },
+      { productId: '16', productName: 'AV-900 Hydraulic Control Valve', quantity: 30, price: 5200 }
+    ],
+    stage: 'negotiation',
+    value: 328500,
+    probability: 70,
+    expectedCloseDate: '2024-08-30',
+    createdAt: '2024-03-15',
+    notes: 'Ultra-long range G700 flagship program',
+    industry: 'airplane'
+  },
+  // Helicopter Programs
+  {
+    id: '6',
+    title: 'Airbus H160 Fuel System Components',
+    customerId: '9',
+    customerName: 'Airbus Helicopters',
+    products: [
+      { productId: '7', productName: 'AV-400 Float Arm Valve', quantity: 150, price: 980 },
+      { productId: '5', productName: 'AV-300 Poppet Drain Valve', quantity: 200, price: 650 }
+    ],
+    stage: 'proposal',
+    value: 277000,
+    probability: 55,
+    expectedCloseDate: '2024-11-20',
+    createdAt: '2024-05-20',
+    notes: 'Next-gen medium helicopter program',
+    industry: 'helicopter'
+  },
+  {
+    id: '7',
+    title: 'Bell V-280 Valor FLRAA Program',
+    customerId: '10',
+    customerName: 'Bell Textron',
+    products: [
+      { productId: '16', productName: 'AV-900 Hydraulic Control Valve', quantity: 100, price: 5200 },
+      { productId: '4', productName: 'AV-250 Remote Motor Operated Valve', quantity: 80, price: 4500 }
+    ],
+    stage: 'closed_won',
+    value: 880000,
+    probability: 100,
+    expectedCloseDate: '2024-05-15',
+    createdAt: '2024-02-10',
+    notes: 'Future Long-Range Assault Aircraft - US Army contract',
+    industry: 'helicopter'
+  },
+  {
+    id: '8',
+    title: 'Sikorsky CH-53K King Stallion',
+    customerId: '11',
+    customerName: 'Sikorsky (Lockheed Martin)',
+    products: [
+      { productId: '14', productName: 'AV-800 Hydraulic Regulator Valve', quantity: 200, price: 3450 },
+      { productId: '15', productName: 'AV-850 Relief/Dump Valve', quantity: 150, price: 2850 }
+    ],
+    stage: 'qualified',
+    value: 1117500,
+    probability: 45,
+    expectedCloseDate: '2024-12-01',
+    createdAt: '2024-04-01',
+    notes: 'Heavy-lift helicopter for USMC - Build to Print opportunity',
+    industry: 'helicopter'
+  },
+  {
+    id: '9',
+    title: 'Leonardo AW609 Tiltrotor',
+    customerId: '12',
+    customerName: 'Leonardo Helicopters',
+    products: [
+      { productId: '4', productName: 'AV-250 Remote Motor Operated Valve', quantity: 40, price: 4500 },
+      { productId: '11', productName: 'AV-600 Split Butterfly Check Valve', quantity: 60, price: 1650 }
+    ],
+    stage: 'lead',
+    value: 279000,
+    probability: 25,
+    expectedCloseDate: '2025-03-01',
+    createdAt: '2024-06-01',
+    notes: 'Commercial tiltrotor certification program',
+    industry: 'helicopter'
+  },
+  // Defense/Military Aircraft
+  {
+    id: '10',
+    title: 'F-35 Lightning II Block 4 Upgrade',
+    customerId: '13',
+    customerName: 'Lockheed Martin Aeronautics',
     products: [
       { productId: '4', productName: 'AV-250 Remote Motor Operated Valve', quantity: 500, price: 4500 },
       { productId: '1', productName: 'AV-100 Ball Shut-Off Valve', quantity: 800, price: 1850 }
@@ -515,88 +769,107 @@ export const opportunities: Opportunity[] = [
     value: 3730000,
     probability: 100,
     expectedCloseDate: '2024-06-01',
-    createdAt: '2024-01-20',
-    notes: 'Contract signed - production schedule confirmed',
+    createdAt: '2024-01-15',
+    notes: 'Multi-year production contract for F-35A/B/C variants',
     industry: 'airplane'
   },
+  // UAS/Drone Programs
   {
-    id: '5',
-    title: 'Skydio X2 Fleet Upgrade',
-    customerId: '5',
-    customerName: 'Skydio Inc',
+    id: '11',
+    title: 'MQ-9 Reaper Block 5 Production',
+    customerId: '15',
+    customerName: 'General Atomics Aeronautical',
     products: [
-      { productId: '10', productName: 'AV-550 Swing Check Valve', quantity: 2000, price: 890 },
-      { productId: '17', productName: 'AV-1000 Gravity Fuel Fill Cap', quantity: 2000, price: 485 }
+      { productId: '2', productName: 'AV-150 Ball Drain Valve', quantity: 300, price: 1250 },
+      { productId: '12', productName: 'AV-700 In-Line Pressure Vent', quantity: 200, price: 1250 }
     ],
-    stage: 'lead',
-    value: 2750000,
-    probability: 20,
-    expectedCloseDate: '2024-12-15',
-    createdAt: '2024-06-01',
-    notes: 'Initial contact - needs discovery call',
+    stage: 'negotiation',
+    value: 625000,
+    probability: 80,
+    expectedCloseDate: '2024-07-15',
+    createdAt: '2024-02-20',
+    notes: 'MALE UAS fuel system valves - USAF and export customers',
     industry: 'drone'
   },
   {
-    id: '6',
-    title: 'Bell V-280 Valor Program',
-    customerId: '6',
-    customerName: 'Bell Textron',
+    id: '12',
+    title: 'RQ-4 Global Hawk Sustainment',
+    customerId: '14',
+    customerName: 'Northrop Grumman',
     products: [
-      { productId: '16', productName: 'AV-900 Hydraulic Control Valve', quantity: 60, price: 5200 },
-      { productId: '7', productName: 'AV-400 Float Arm Valve', quantity: 120, price: 980 }
-    ],
-    stage: 'closed_won',
-    value: 429600,
-    probability: 100,
-    expectedCloseDate: '2024-05-20',
-    createdAt: '2024-02-10',
-    notes: 'Long-term supply agreement in place',
-    industry: 'helicopter'
-  },
-  {
-    id: '7',
-    title: 'Embraer E2 Production Line',
-    customerId: '7',
-    customerName: 'Embraer S.A.',
-    products: [
-      { productId: '11', productName: 'AV-600 Split Butterfly Check Valve', quantity: 30, price: 1650 },
+      { productId: '9', productName: 'AV-500 Poppet Check Valve', quantity: 150, price: 1150 },
       { productId: '13', productName: 'AV-750 Tank Mount Vent Valve', quantity: 100, price: 1850 }
     ],
     stage: 'proposal',
-    value: 234500,
-    probability: 60,
-    expectedCloseDate: '2024-10-01',
-    createdAt: '2024-04-28',
-    notes: 'Competitive bid situation with two other suppliers',
-    industry: 'airplane'
+    value: 357500,
+    probability: 50,
+    expectedCloseDate: '2024-09-15',
+    createdAt: '2024-04-10',
+    notes: 'HALE UAS fleet sustainment and spares',
+    industry: 'drone'
   },
   {
-    id: '8',
-    title: 'Parrot ANAFI Government',
-    customerId: '8',
-    customerName: 'Parrot Drones',
+    id: '13',
+    title: 'Anduril Altius-600M Production',
+    customerId: '16',
+    customerName: 'Anduril Industries',
     products: [
-      { productId: '2', productName: 'AV-150 Ball Drain Valve', quantity: 500, price: 1250 }
+      { productId: '5', productName: 'AV-300 Poppet Drain Valve', quantity: 1000, price: 650 },
+      { productId: '10', productName: 'AV-550 Swing Check Valve', quantity: 500, price: 890 }
+    ],
+    stage: 'qualified',
+    value: 1095000,
+    probability: 40,
+    expectedCloseDate: '2024-11-01',
+    createdAt: '2024-05-15',
+    notes: 'Autonomous loitering munition - Build to Spec opportunity',
+    industry: 'drone'
+  },
+  {
+    id: '14',
+    title: 'Bayraktar TB3 Naval Variant',
+    customerId: '19',
+    customerName: 'Baykar Technologies',
+    products: [
+      { productId: '6', productName: 'AV-350 Solenoid Drain Valve', quantity: 200, price: 1450 },
+      { productId: '8', productName: 'AV-450 Guided Float Valve', quantity: 150, price: 1350 }
+    ],
+    stage: 'lead',
+    value: 492500,
+    probability: 30,
+    expectedCloseDate: '2025-02-01',
+    createdAt: '2024-06-10',
+    notes: 'New carrier-capable MALE UAS for Turkish Navy',
+    industry: 'drone'
+  },
+  {
+    id: '15',
+    title: 'IAI Heron TP Fleet Expansion',
+    customerId: '20',
+    customerName: 'Israel Aerospace Industries',
+    products: [
+      { productId: '3', productName: 'AV-200 Flow Control Ball Valve', quantity: 80, price: 2650 },
+      { productId: '12', productName: 'AV-700 In-Line Pressure Vent', quantity: 120, price: 1250 }
     ],
     stage: 'closed_lost',
-    value: 625000,
+    value: 362000,
     probability: 0,
     expectedCloseDate: '2024-04-30',
-    createdAt: '2024-02-15',
-    notes: 'Lost to competitor - price sensitivity',
+    createdAt: '2024-02-01',
+    notes: 'Lost to local Israeli supplier - price and delivery terms',
     industry: 'drone'
   }
 ];
 
 export const dashboardStats: DashboardStats = {
-  totalRevenue: 5281000,
-  activeCustomers: 6,
-  openOpportunities: 5,
-  pipelineValue: 13850000,
-  conversionRate: 33.3,
+  totalRevenue: 4903000,
+  activeCustomers: 18,
+  openOpportunities: 11,
+  pipelineValue: 6741500,
+  conversionRate: 26.7,
   industryBreakdown: {
-    airplane: 5795000,
-    drone: 10700000,
-    helicopter: 2636000
+    airplane: 6456000,
+    drone: 2932000,
+    helicopter: 2553500
   }
 };
