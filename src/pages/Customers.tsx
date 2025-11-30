@@ -283,17 +283,26 @@ export default function Customers() {
             <table className="w-full">
               <thead className="bg-slate-50 border-b border-slate-200">
                 <tr>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Manufacturer
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Aircraft
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Application
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
                     Current Supplier
+                  </th>
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    Buyer Location
+                  </th>
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    Buyer Name
+                  </th>
+                  <th className="px-4 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                    Buyer Email
                   </th>
                 </tr>
               </thead>
@@ -310,38 +319,61 @@ export default function Customers() {
                         }}
                         className="hover:bg-slate-50 cursor-pointer transition-colors"
                       >
-                        <td className="px-6 py-3">
+                        <td className="px-4 py-3">
                           {acIndex === 0 && appIndex === 0 ? (
-                            <div className="flex items-center gap-3">
-                              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-aerospace-400 to-aerospace-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
+                            <div className="flex items-center gap-2">
+                              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-aerospace-400 to-aerospace-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
                                 {customer.companyName.substring(0, 2).toUpperCase()}
                               </div>
-                              <div>
-                                <p className="font-semibold text-slate-900 text-sm">{customer.companyName}</p>
-                              </div>
+                              <p className="font-semibold text-slate-900 text-sm">{customer.companyName}</p>
                             </div>
                           ) : null}
                         </td>
-                        <td className="px-6 py-3">
+                        <td className="px-4 py-3">
                           {appIndex === 0 ? (
-                            <span className="text-sm font-medium text-slate-800 px-2.5 py-1 bg-slate-100 rounded-lg">
+                            <span className="text-sm font-medium text-slate-800 px-2 py-0.5 bg-slate-100 rounded">
                               {aircraft.name}
                             </span>
                           ) : null}
                         </td>
-                        <td className="px-6 py-3">
+                        <td className="px-4 py-3">
                           <span className="text-sm text-slate-700">
                             {app.name}
                           </span>
                         </td>
-                        <td className="px-6 py-3">
+                        <td className="px-4 py-3">
                           <span
-                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getSupplierBadge(
+                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${getSupplierBadge(
                               app.supplier
                             )}`}
                           >
                             {app.supplier}
                           </span>
+                        </td>
+                        <td className="px-4 py-3">
+                          {acIndex === 0 && appIndex === 0 ? (
+                            <span className="text-sm text-slate-600">
+                              {customer.address}
+                            </span>
+                          ) : null}
+                        </td>
+                        <td className="px-4 py-3">
+                          {acIndex === 0 && appIndex === 0 ? (
+                            <span className="text-sm text-slate-700 font-medium">
+                              {customer.contactName}
+                            </span>
+                          ) : null}
+                        </td>
+                        <td className="px-4 py-3">
+                          {acIndex === 0 && appIndex === 0 ? (
+                            <a
+                              href={`mailto:${customer.email}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="text-sm text-aerospace-600 hover:text-aerospace-700 hover:underline"
+                            >
+                              {customer.email}
+                            </a>
+                          ) : null}
                         </td>
                       </tr>
                     ))
