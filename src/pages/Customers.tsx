@@ -5,7 +5,6 @@ import {
   Filter,
   Mail,
   Phone,
-  MapPin,
   MoreVertical,
   Plane,
   Rocket,
@@ -29,34 +28,141 @@ const industryColors = {
   helicopter: 'bg-emerald-100 text-emerald-700 border-emerald-200',
 };
 
-const statusColors = {
-  active: 'bg-emerald-100 text-emerald-700',
-  inactive: 'bg-slate-100 text-slate-600',
-  prospect: 'bg-amber-100 text-amber-700',
+// Application types for valve products
+type Application = {
+  name: string;
+  supplier: 'AutoValve' | 'Prospect' | 'Competitor';
 };
 
-// Aircraft data mapped to customers
-const customerAircraft: Record<string, { aircraft: string[]; valveSupplier: string }> = {
-  '1': { aircraft: ['737 MAX', '747', '767', '777', '787 Dreamliner'], valveSupplier: 'AutoValve' },
-  '2': { aircraft: ['A319', 'A320', 'A321', 'A320neo', 'A330', 'A350', 'A380'], valveSupplier: 'AutoValve' },
-  '3': { aircraft: ['E170', 'E190', 'E195', 'E2 Series', 'Phenom 100/300', 'Praetor 500/600'], valveSupplier: 'AutoValve' },
-  '4': { aircraft: ['Global 7500', 'Global 8000', 'Challenger 350', 'Challenger 650'], valveSupplier: 'AutoValve' },
-  '5': { aircraft: ['C919', 'ARJ21'], valveSupplier: 'Prospect' },
-  '6': { aircraft: ['G400', 'G500', 'G600', 'G650', 'G700', 'G800'], valveSupplier: 'AutoValve' },
-  '7': { aircraft: ['Falcon 6X', 'Falcon 8X', 'Falcon 10X'], valveSupplier: 'AutoValve' },
-  '8': { aircraft: ['Citation CJ Series', 'Citation Latitude', 'Citation Longitude', 'Caravan'], valveSupplier: 'AutoValve' },
-  '9': { aircraft: ['H125', 'H145', 'H160', 'Tiger', 'NH90'], valveSupplier: 'AutoValve' },
-  '10': { aircraft: ['Bell 407', 'Bell 429', 'Bell 505', 'V-22 Osprey', 'V-280 Valor'], valveSupplier: 'AutoValve' },
-  '11': { aircraft: ['UH-60 Black Hawk', 'CH-53K King Stallion', 'S-76', 'S-92'], valveSupplier: 'AutoValve' },
-  '12': { aircraft: ['AW109', 'AW139', 'AW169', 'AW609', 'AW101', 'AW159 Wildcat'], valveSupplier: 'AutoValve' },
-  '13': { aircraft: ['F-35 Lightning II', 'F-16 Fighting Falcon', 'C-130J Super Hercules'], valveSupplier: 'AutoValve' },
-  '14': { aircraft: ['RQ-4 Global Hawk', 'MQ-4C Triton', 'B-21 Raider'], valveSupplier: 'AutoValve' },
-  '15': { aircraft: ['MQ-9 Reaper', 'MQ-9B SkyGuardian', 'MQ-1C Gray Eagle', 'Avenger'], valveSupplier: 'AutoValve' },
-  '16': { aircraft: ['Ghost', 'Altius-600', 'Altius-700', 'YFQ-44A (CCA)'], valveSupplier: 'AutoValve' },
-  '17': { aircraft: ['XQ-58A Valkyrie', 'BQM-167 Target Drones'], valveSupplier: 'Prospect' },
-  '18': { aircraft: ['Switchblade 300/600', 'RQ-11 Raven', 'RQ-20 Puma'], valveSupplier: 'AutoValve' },
-  '19': { aircraft: ['Bayraktar TB2', 'Bayraktar TB3', 'Bayraktar Akıncı'], valveSupplier: 'AutoValve' },
-  '20': { aircraft: ['Heron', 'Heron TP (Eitan)', 'Harop'], valveSupplier: 'Competitor' },
+type AircraftEntry = {
+  name: string;
+  applications: Application[];
+};
+
+// Aircraft data mapped to customers with applications and suppliers
+const customerAircraft: Record<string, AircraftEntry[]> = {
+  '1': [ // Boeing
+    { name: '737 MAX', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Check Valves', supplier: 'Competitor' }] },
+    { name: '747', applications: [{ name: 'Flow Control Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
+    { name: '767', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'Competitor' }] },
+    { name: '777', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Gravity Fuel Fill Caps', supplier: 'AutoValve' }] },
+    { name: '787 Dreamliner', applications: [{ name: 'Float Arm Style Valves', supplier: 'AutoValve' }, { name: 'Solenoid Activated Valves', supplier: 'AutoValve' }] },
+  ],
+  '2': [ // Airbus
+    { name: 'A319', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Check Valves', supplier: 'AutoValve' }] },
+    { name: 'A320', applications: [{ name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
+    { name: 'A321', applications: [{ name: 'Flow Control Valves', supplier: 'AutoValve' }, { name: 'Hydraulic Control Valves', supplier: 'Competitor' }] },
+    { name: 'A320neo', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Gravity Fuel Fill Caps', supplier: 'AutoValve' }] },
+    { name: 'A330', applications: [{ name: 'Float Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'AutoValve' }] },
+    { name: 'A350', applications: [{ name: 'Solenoid Activated Valves', supplier: 'AutoValve' }, { name: 'Tank Mounted Valves', supplier: 'AutoValve' }] },
+    { name: 'A380', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Split Butterfly Check Valves', supplier: 'Competitor' }] },
+  ],
+  '3': [ // Embraer
+    { name: 'E170', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }] },
+    { name: 'E190', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
+    { name: 'E195', applications: [{ name: 'Float Valves', supplier: 'AutoValve' }, { name: 'Hydraulic Control Valves', supplier: 'AutoValve' }] },
+    { name: 'E2 Series', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Gravity Fuel Fill Caps', supplier: 'AutoValve' }] },
+    { name: 'Phenom 100/300', applications: [{ name: 'Solenoid Activated Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'AutoValve' }] },
+    { name: 'Praetor 500/600', applications: [{ name: 'Flow Control Valves', supplier: 'AutoValve' }, { name: 'Tank Mounted Valves', supplier: 'AutoValve' }] },
+  ],
+  '4': [ // Bombardier
+    { name: 'Global 7500', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }] },
+    { name: 'Global 8000', applications: [{ name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
+    { name: 'Challenger 350', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Float Valves', supplier: 'AutoValve' }] },
+    { name: 'Challenger 650', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Gravity Fuel Fill Caps', supplier: 'AutoValve' }] },
+  ],
+  '5': [ // COMAC
+    { name: 'C919', applications: [{ name: 'Shut-Off Valves', supplier: 'Prospect' }, { name: 'Drain Valves', supplier: 'Prospect' }, { name: 'Check Valves', supplier: 'Competitor' }] },
+    { name: 'ARJ21', applications: [{ name: 'Flow Control Valves', supplier: 'Prospect' }, { name: 'Pressure Vent Valves', supplier: 'Competitor' }] },
+  ],
+  '6': [ // Gulfstream
+    { name: 'G400', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }] },
+    { name: 'G500', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Hydraulic Control Valves', supplier: 'AutoValve' }] },
+    { name: 'G600', applications: [{ name: 'Float Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
+    { name: 'G650', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Gravity Fuel Fill Caps', supplier: 'AutoValve' }] },
+    { name: 'G700', applications: [{ name: 'Solenoid Activated Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'AutoValve' }] },
+    { name: 'G800', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Tank Mounted Valves', supplier: 'AutoValve' }] },
+  ],
+  '7': [ // Dassault
+    { name: 'Falcon 6X', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Check Valves', supplier: 'AutoValve' }] },
+    { name: 'Falcon 8X', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Float Valves', supplier: 'AutoValve' }] },
+    { name: 'Falcon 10X', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
+  ],
+  '8': [ // Textron/Cessna
+    { name: 'Citation CJ Series', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }] },
+    { name: 'Citation Latitude', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Float Valves', supplier: 'AutoValve' }] },
+    { name: 'Citation Longitude', applications: [{ name: 'Hydraulic Control Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
+    { name: 'Caravan', applications: [{ name: 'Gravity Fuel Fill Caps', supplier: 'AutoValve' }, { name: 'Gravity Oil Fill Caps', supplier: 'AutoValve' }] },
+  ],
+  '9': [ // Airbus Helicopters
+    { name: 'H125', applications: [{ name: 'Hydraulic Control Valves', supplier: 'AutoValve' }, { name: 'Check Valves', supplier: 'AutoValve' }] },
+    { name: 'H145', applications: [{ name: 'Float Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }] },
+    { name: 'H160', applications: [{ name: 'Pressure Vent Valves', supplier: 'AutoValve' }, { name: 'Shut-Off Valves', supplier: 'AutoValve' }] },
+    { name: 'Tiger', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'AutoValve' }] },
+    { name: 'NH90', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Solenoid Activated Valves', supplier: 'AutoValve' }] },
+  ],
+  '10': [ // Bell
+    { name: 'Bell 407', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }] },
+    { name: 'Bell 429', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Float Valves', supplier: 'AutoValve' }] },
+    { name: 'Bell 505', applications: [{ name: 'Hydraulic Control Valves', supplier: 'AutoValve' }, { name: 'Gravity Fuel Fill Caps', supplier: 'AutoValve' }] },
+    { name: 'V-22 Osprey', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'Competitor' }] },
+    { name: 'V-280 Valor', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Solenoid Activated Valves', supplier: 'AutoValve' }] },
+  ],
+  '11': [ // Sikorsky
+    { name: 'UH-60 Black Hawk', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'AutoValve' }, { name: 'Check Valves', supplier: 'AutoValve' }] },
+    { name: 'CH-53K King Stallion', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
+    { name: 'S-76', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Float Valves', supplier: 'AutoValve' }] },
+    { name: 'S-92', applications: [{ name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Solenoid Activated Valves', supplier: 'AutoValve' }] },
+  ],
+  '12': [ // Leonardo
+    { name: 'AW109', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }] },
+    { name: 'AW139', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Hydraulic Control Valves', supplier: 'AutoValve' }] },
+    { name: 'AW169', applications: [{ name: 'Float Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
+    { name: 'AW609', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }] },
+    { name: 'AW101', applications: [{ name: 'Relief/Dump Valves', supplier: 'AutoValve' }, { name: 'Tank Mounted Valves', supplier: 'AutoValve' }] },
+    { name: 'AW159 Wildcat', applications: [{ name: 'Solenoid Activated Valves', supplier: 'AutoValve' }, { name: 'Gravity Fuel Fill Caps', supplier: 'AutoValve' }] },
+  ],
+  '13': [ // Lockheed Martin
+    { name: 'F-35 Lightning II', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'AutoValve' }, { name: 'Control Valves', supplier: 'AutoValve' }] },
+    { name: 'F-16 Fighting Falcon', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Check Valves', supplier: 'AutoValve' }] },
+    { name: 'C-130J Super Hercules', applications: [{ name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }, { name: 'Float Valves', supplier: 'AutoValve' }] },
+  ],
+  '14': [ // Northrop Grumman
+    { name: 'RQ-4 Global Hawk', applications: [{ name: 'Flow Control Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
+    { name: 'MQ-4C Triton', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }] },
+    { name: 'B-21 Raider', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Tank Mounted Valves', supplier: 'AutoValve' }] },
+  ],
+  '15': [ // General Atomics
+    { name: 'MQ-9 Reaper', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Check Valves', supplier: 'AutoValve' }] },
+    { name: 'MQ-9B SkyGuardian', applications: [{ name: 'Flow Control Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
+    { name: 'MQ-1C Gray Eagle', applications: [{ name: 'Float Valves', supplier: 'AutoValve' }, { name: 'Solenoid Activated Valves', supplier: 'AutoValve' }] },
+    { name: 'Avenger', applications: [{ name: 'Hydraulic Control Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'AutoValve' }] },
+  ],
+  '16': [ // Anduril
+    { name: 'Ghost', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
+    { name: 'Altius-600', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Flow Control Valves', supplier: 'AutoValve' }] },
+    { name: 'Altius-700', applications: [{ name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Float Valves', supplier: 'AutoValve' }] },
+    { name: 'YFQ-44A (CCA)', applications: [{ name: 'Hydraulic Control Valves', supplier: 'AutoValve' }, { name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }] },
+  ],
+  '17': [ // Kratos
+    { name: 'XQ-58A Valkyrie', applications: [{ name: 'Shut-Off Valves', supplier: 'Prospect' }, { name: 'Check Valves', supplier: 'Competitor' }, { name: 'Hydraulic Control Valves', supplier: 'Prospect' }] },
+    { name: 'BQM-167 Target Drones', applications: [{ name: 'Drain Valves', supplier: 'Prospect' }, { name: 'Pressure Vent Valves', supplier: 'Competitor' }] },
+  ],
+  '18': [ // AeroVironment
+    { name: 'Switchblade 300/600', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
+    { name: 'RQ-11 Raven', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Flow Control Valves', supplier: 'AutoValve' }] },
+    { name: 'RQ-20 Puma', applications: [{ name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Float Valves', supplier: 'AutoValve' }] },
+  ],
+  '19': [ // Baykar
+    { name: 'Bayraktar TB2', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Check Valves', supplier: 'AutoValve' }] },
+    { name: 'Bayraktar TB3', applications: [{ name: 'Flow Control Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
+    { name: 'Bayraktar Akıncı', applications: [{ name: 'Hydraulic Control Valves', supplier: 'AutoValve' }, { name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }] },
+  ],
+  '20': [ // IAI
+    { name: 'Heron', applications: [{ name: 'Shut-Off Valves', supplier: 'Competitor' }, { name: 'Check Valves', supplier: 'Competitor' }] },
+    { name: 'Heron TP (Eitan)', applications: [{ name: 'Drain Valves', supplier: 'Competitor' }, { name: 'Pressure Vent Valves', supplier: 'Competitor' }] },
+    { name: 'Harop', applications: [{ name: 'Flow Control Valves', supplier: 'Competitor' }, { name: 'Float Valves', supplier: 'Prospect' }] },
+  ],
 };
 
 export default function Customers() {
@@ -68,12 +174,15 @@ export default function Customers() {
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
   const filteredCustomers = customers.filter((customer) => {
-    const aircraftList = customerAircraft[customer.id]?.aircraft || [];
+    const aircraftList = customerAircraft[customer.id] || [];
     const matchesSearch =
       customer.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.contactName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      aircraftList.some(ac => ac.toLowerCase().includes(searchTerm.toLowerCase()));
+      aircraftList.some(ac =>
+        ac.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        ac.applications.some(app => app.name.toLowerCase().includes(searchTerm.toLowerCase()))
+      );
     const matchesIndustry = filterIndustry === 'all' || customer.industry === filterIndustry;
     return matchesSearch && matchesIndustry;
   });
@@ -178,93 +287,64 @@ export default function Customers() {
                     Manufacturer
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Industry
+                    Aircraft
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Aircraft / Systems
+                    Application
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Valve Supplier
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Status
-                  </th>
-                  <th className="px-6 py-4 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">
-                    Contact
+                    Current Supplier
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {filteredCustomers.map((customer) => {
-                  const IndustryIcon = industryIcons[customer.industry];
-                  const aircraftData = customerAircraft[customer.id] || { aircraft: [], valveSupplier: '-' };
-                  return (
-                    <tr
-                      key={customer.id}
-                      onClick={() => {
-                        setSelectedCustomer(customer);
-                        setIsModalOpen(true);
-                      }}
-                      className="hover:bg-slate-50 cursor-pointer transition-colors"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-aerospace-400 to-aerospace-600 flex items-center justify-center text-white font-bold text-sm shadow-md">
-                            {customer.companyName.substring(0, 2).toUpperCase()}
-                          </div>
-                          <div>
-                            <p className="font-semibold text-slate-900">{customer.companyName}</p>
-                            <p className="text-sm text-slate-500">{customer.contactName}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border ${
-                            industryColors[customer.industry]
-                          }`}
-                        >
-                          <IndustryIcon className="w-3.5 h-3.5" />
-                          {customer.industry.charAt(0).toUpperCase() + customer.industry.slice(1)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="space-y-1">
-                          {aircraftData.aircraft.map((ac, index) => (
-                            <div
-                              key={index}
-                              className="text-sm text-slate-700 px-2 py-0.5 bg-slate-50 rounded inline-block mr-1 mb-1"
-                            >
-                              {ac}
+                {filteredCustomers.flatMap((customer) => {
+                  const aircraftList = customerAircraft[customer.id] || [];
+                  return aircraftList.flatMap((aircraft, acIndex) =>
+                    aircraft.applications.map((app, appIndex) => (
+                      <tr
+                        key={`${customer.id}-${acIndex}-${appIndex}`}
+                        onClick={() => {
+                          setSelectedCustomer(customer);
+                          setIsModalOpen(true);
+                        }}
+                        className="hover:bg-slate-50 cursor-pointer transition-colors"
+                      >
+                        <td className="px-6 py-3">
+                          {acIndex === 0 && appIndex === 0 ? (
+                            <div className="flex items-center gap-3">
+                              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-aerospace-400 to-aerospace-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
+                                {customer.companyName.substring(0, 2).toUpperCase()}
+                              </div>
+                              <div>
+                                <p className="font-semibold text-slate-900 text-sm">{customer.companyName}</p>
+                              </div>
                             </div>
-                          ))}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getSupplierBadge(
-                            aircraftData.valveSupplier
-                          )}`}
-                        >
-                          {aircraftData.valveSupplier}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span
-                          className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                            statusColors[customer.status]
-                          }`}
-                        >
-                          {customer.status.charAt(0).toUpperCase() + customer.status.slice(1)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="space-y-1">
-                          <p className="text-sm text-slate-600 truncate max-w-[180px]">{customer.email}</p>
-                          <p className="text-xs text-slate-400">{customer.phone}</p>
-                        </div>
-                      </td>
-                    </tr>
+                          ) : null}
+                        </td>
+                        <td className="px-6 py-3">
+                          {appIndex === 0 ? (
+                            <span className="text-sm font-medium text-slate-800 px-2.5 py-1 bg-slate-100 rounded-lg">
+                              {aircraft.name}
+                            </span>
+                          ) : null}
+                        </td>
+                        <td className="px-6 py-3">
+                          <span className="text-sm text-slate-700">
+                            {app.name}
+                          </span>
+                        </td>
+                        <td className="px-6 py-3">
+                          <span
+                            className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium ${getSupplierBadge(
+                              app.supplier
+                            )}`}
+                          >
+                            {app.supplier}
+                          </span>
+                        </td>
+                      </tr>
+                    ))
                   );
                 })}
               </tbody>
@@ -278,7 +358,7 @@ export default function Customers() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCustomers.map((customer) => {
             const IndustryIcon = industryIcons[customer.industry];
-            const aircraftData = customerAircraft[customer.id] || { aircraft: [], valveSupplier: '-' };
+            const aircraftList = customerAircraft[customer.id] || [];
             return (
               <div
                 key={customer.id}
@@ -305,18 +385,26 @@ export default function Customers() {
                   </button>
                 </div>
 
-                <div className="mt-4 p-3 rounded-lg bg-slate-50">
-                  <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Aircraft / Systems</p>
-                  <div className="flex flex-wrap gap-1">
-                    {aircraftData.aircraft.map((ac, index) => (
-                      <span
-                        key={index}
-                        className="text-xs text-slate-700 px-2 py-0.5 bg-white rounded border border-slate-200"
-                      >
-                        {ac}
-                      </span>
-                    ))}
-                  </div>
+                <div className="mt-4 space-y-2 max-h-48 overflow-y-auto">
+                  {aircraftList.slice(0, 3).map((aircraft, acIndex) => (
+                    <div key={acIndex} className="p-2 rounded-lg bg-slate-50">
+                      <p className="text-xs font-medium text-slate-800 mb-1">{aircraft.name}</p>
+                      <div className="flex flex-wrap gap-1">
+                        {aircraft.applications.map((app, appIndex) => (
+                          <span
+                            key={appIndex}
+                            className={`text-xs px-1.5 py-0.5 rounded ${getSupplierBadge(app.supplier)}`}
+                            title={`${app.name} - ${app.supplier}`}
+                          >
+                            {app.name.split(' ')[0]}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                  {aircraftList.length > 3 && (
+                    <p className="text-xs text-slate-500 text-center">+{aircraftList.length - 3} more aircraft</p>
+                  )}
                 </div>
 
                 <div className="mt-3 space-y-2">
@@ -327,10 +415,6 @@ export default function Customers() {
                   <div className="flex items-center gap-2 text-sm text-slate-600">
                     <Phone className="w-4 h-4 text-slate-400" />
                     <span>{customer.phone}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-slate-600">
-                    <MapPin className="w-4 h-4 text-slate-400" />
-                    <span className="truncate">{customer.address}</span>
                   </div>
                 </div>
 
@@ -343,12 +427,8 @@ export default function Customers() {
                     <IndustryIcon className="w-3.5 h-3.5" />
                     {customer.industry.charAt(0).toUpperCase() + customer.industry.slice(1)}
                   </span>
-                  <span
-                    className={`px-2.5 py-1 rounded-full text-xs font-medium ${getSupplierBadge(
-                      aircraftData.valveSupplier
-                    )}`}
-                  >
-                    {aircraftData.valveSupplier}
+                  <span className="text-xs text-slate-500">
+                    {aircraftList.length} aircraft
                   </span>
                 </div>
               </div>
@@ -412,28 +492,26 @@ export default function Customers() {
                 </div>
 
                 <div className="p-4 rounded-xl bg-slate-50">
-                  <p className="text-xs text-slate-500 uppercase tracking-wider mb-2">Aircraft / Systems</p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {(customerAircraft[selectedCustomer.id]?.aircraft || []).map((ac, index) => (
-                      <span
-                        key={index}
-                        className="text-sm text-slate-700 px-2.5 py-1 bg-white rounded-lg border border-slate-200"
-                      >
-                        {ac}
-                      </span>
+                  <p className="text-xs text-slate-500 uppercase tracking-wider mb-3">Aircraft & Applications</p>
+                  <div className="space-y-3 max-h-64 overflow-y-auto">
+                    {(customerAircraft[selectedCustomer.id] || []).map((aircraft, acIndex) => (
+                      <div key={acIndex} className="p-3 bg-white rounded-lg border border-slate-200">
+                        <p className="font-medium text-slate-900 text-sm mb-2">{aircraft.name}</p>
+                        <div className="space-y-1.5">
+                          {aircraft.applications.map((app, appIndex) => (
+                            <div key={appIndex} className="flex items-center justify-between text-xs">
+                              <span className="text-slate-600">{app.name}</span>
+                              <span
+                                className={`px-2 py-0.5 rounded-full font-medium ${getSupplierBadge(app.supplier)}`}
+                              >
+                                {app.supplier}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     ))}
                   </div>
-                </div>
-
-                <div className="p-4 rounded-xl bg-slate-50">
-                  <p className="text-xs text-slate-500 uppercase tracking-wider">Valve Supplier</p>
-                  <span
-                    className={`mt-1 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getSupplierBadge(
-                      customerAircraft[selectedCustomer.id]?.valveSupplier || '-'
-                    )}`}
-                  >
-                    {customerAircraft[selectedCustomer.id]?.valveSupplier || '-'}
-                  </span>
                 </div>
 
                 <div className="p-4 rounded-xl bg-slate-50">
