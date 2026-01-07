@@ -12,6 +12,9 @@ import {
   X,
   LayoutGrid,
   List,
+  Save,
+  Trash2,
+  PlusCircle,
 } from 'lucide-react';
 import { customers as initialCustomers } from '../data/mockData';
 import type { Customer, IndustryType } from '../types';
@@ -165,16 +168,101 @@ const customerAircraft: Record<string, AircraftEntry[]> = {
   ],
 };
 
+// Initial aircraft data - will be managed in state
+const initialCustomerAircraft: Record<string, AircraftEntry[]> = { ...customerAircraft };
+
 export default function Customers() {
-  const [customers] = useState<Customer[]>(initialCustomers);
+  const [customers, setCustomers] = useState<Customer[]>(initialCustomers);
+  const [aircraftData, setAircraftData] = useState<Record<string, AircraftEntry[]>>(initialCustomerAircraft);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterIndustry, setFilterIndustry] = useState<IndustryType | 'all'>('all');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
 
+  // Edit form state
+  const [editForm, setEditForm] = useState<Customer | null>(null);
+  const [editAircraft, setEditAircraft] = useState<AircraftEntry[]>([]);
+
+  const openEditModal = (customer: Customer) => {
+    setEditForm({ ...customer });
+    setEditAircraft(JSON.parse(JSON.stringify(aircraftData[customer.id] || [])));
+    setIsEditModalOpen(true);
+  };
+
+  const handleEditFormChange = (field: keyof Customer, value: string) => {
+    if (editForm) {
+      setEditForm({ ...editForm, [field]: value });
+    }
+  };
+
+  const handleAddAircraft = () => {
+    setEditAircraft([
+      ...editAircraft,
+      { name: '', applications: [{ name: '', supplier: 'Prospect' }] },
+    ]);
+  };
+
+  const handleRemoveAircraft = (index: number) => {
+    setEditAircraft(editAircraft.filter((_, i) => i !== index));
+  };
+
+  const handleAircraftNameChange = (index: number, name: string) => {
+    const updated = [...editAircraft];
+    updated[index].name = name;
+    setEditAircraft(updated);
+  };
+
+  const handleAddApplication = (aircraftIndex: number) => {
+    const updated = [...editAircraft];
+    updated[aircraftIndex].applications.push({ name: '', supplier: 'Prospect' });
+    setEditAircraft(updated);
+  };
+
+  const handleRemoveApplication = (aircraftIndex: number, appIndex: number) => {
+    const updated = [...editAircraft];
+    updated[aircraftIndex].applications = updated[aircraftIndex].applications.filter(
+      (_, i) => i !== appIndex
+    );
+    setEditAircraft(updated);
+  };
+
+  const handleApplicationChange = (
+    aircraftIndex: number,
+    appIndex: number,
+    field: 'name' | 'supplier',
+    value: string
+  ) => {
+    const updated = [...editAircraft];
+    if (field === 'supplier') {
+      updated[aircraftIndex].applications[appIndex].supplier = value as 'AutoValve' | 'Prospect' | 'Competitor';
+    } else {
+      updated[aircraftIndex].applications[appIndex].name = value;
+    }
+    setEditAircraft(updated);
+  };
+
+  const handleSaveCustomer = () => {
+    if (!editForm) return;
+
+    // Update customer in list
+    setCustomers(customers.map((c) => (c.id === editForm.id ? editForm : c)));
+
+    // Update aircraft data
+    const filteredAircraft = editAircraft.filter(
+      (ac) => ac.name.trim() && ac.applications.some((app) => app.name.trim())
+    );
+    setAircraftData({ ...aircraftData, [editForm.id]: filteredAircraft });
+
+    // Update selected customer for detail modal
+    setSelectedCustomer(editForm);
+
+    setIsEditModalOpen(false);
+  };
+
   const filteredCustomers = customers.filter((customer) => {
-    const aircraftList = customerAircraft[customer.id] || [];
+    const aircraftList = aircraftData[customer.id] || [];
     const matchesSearch =
       customer.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.contactName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -308,7 +396,7 @@ export default function Customers() {
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {filteredCustomers.flatMap((customer) => {
-                  const aircraftList = customerAircraft[customer.id] || [];
+                  const aircraftList = aircraftData[customer.id] || [];
                   return aircraftList.flatMap((aircraft, acIndex) =>
                     aircraft.applications.map((app, appIndex) => (
                       <tr
@@ -390,7 +478,7 @@ export default function Customers() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCustomers.map((customer) => {
             const IndustryIcon = industryIcons[customer.industry];
-            const aircraftList = customerAircraft[customer.id] || [];
+            const aircraftList = aircraftData[customer.id] || [];
             return (
               <div
                 key={customer.id}
@@ -526,7 +614,7 @@ export default function Customers() {
                 <div className="p-4 rounded-xl bg-slate-50">
                   <p className="text-xs text-slate-500 uppercase tracking-wider mb-3">Aircraft & Applications</p>
                   <div className="space-y-3 max-h-64 overflow-y-auto">
-                    {(customerAircraft[selectedCustomer.id] || []).map((aircraft, acIndex) => (
+                    {(aircraftData[selectedCustomer.id] || []).map((aircraft, acIndex) => (
                       <div key={acIndex} className="p-3 bg-white rounded-lg border border-slate-200">
                         <p className="font-medium text-slate-900 text-sm mb-2">{aircraft.name}</p>
                         <div className="space-y-1.5">
@@ -577,8 +665,271 @@ export default function Customers() {
               </div>
 
               <div className="mt-6 flex gap-3">
-                <button className="btn-primary flex-1">Edit Customer</button>
+                <button
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    openEditModal(selectedCustomer);
+                  }}
+                  className="btn-primary flex-1"
+                >
+                  Edit Customer
+                </button>
                 <button className="btn-secondary flex-1">View Opportunities</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Customer Modal */}
+      {isEditModalOpen && editForm && (
+        <div className="fixed inset-0 z-50 overflow-y-auto">
+          <div className="flex min-h-screen items-center justify-center p-4">
+            <div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+              onClick={() => setIsEditModalOpen(false)}
+            />
+            <div className="relative bg-white rounded-2xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto z-10">
+              <div className="sticky top-0 bg-white border-b border-slate-200 p-6 rounded-t-2xl">
+                <button
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="absolute top-4 right-4 p-2 hover:bg-slate-100 rounded-lg"
+                >
+                  <X className="w-5 h-5 text-slate-400" />
+                </button>
+                <h2 className="text-xl font-bold text-slate-900">Edit Customer</h2>
+                <p className="text-sm text-slate-500 mt-1">Update customer information and aircraft details</p>
+              </div>
+
+              <div className="p-6 space-y-6">
+                {/* Basic Information */}
+                <div>
+                  <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wider mb-4">
+                    Basic Information
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Company Name
+                      </label>
+                      <input
+                        type="text"
+                        value={editForm.companyName}
+                        onChange={(e) => handleEditFormChange('companyName', e.target.value)}
+                        className="input"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Contact Name
+                      </label>
+                      <input
+                        type="text"
+                        value={editForm.contactName}
+                        onChange={(e) => handleEditFormChange('contactName', e.target.value)}
+                        className="input"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Email
+                      </label>
+                      <input
+                        type="email"
+                        value={editForm.email}
+                        onChange={(e) => handleEditFormChange('email', e.target.value)}
+                        className="input"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Phone
+                      </label>
+                      <input
+                        type="tel"
+                        value={editForm.phone}
+                        onChange={(e) => handleEditFormChange('phone', e.target.value)}
+                        className="input"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Industry
+                      </label>
+                      <select
+                        value={editForm.industry}
+                        onChange={(e) => handleEditFormChange('industry', e.target.value)}
+                        className="input"
+                      >
+                        <option value="airplane">Airplane</option>
+                        <option value="drone">Drone</option>
+                        <option value="helicopter">Helicopter</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">
+                        Status
+                      </label>
+                      <select
+                        value={editForm.status}
+                        onChange={(e) => handleEditFormChange('status', e.target.value)}
+                        className="input"
+                      >
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="prospect">Prospect</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Address */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Address
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.address}
+                    onChange={(e) => handleEditFormChange('address', e.target.value)}
+                    className="input"
+                  />
+                </div>
+
+                {/* Notes */}
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Notes
+                  </label>
+                  <textarea
+                    value={editForm.notes}
+                    onChange={(e) => handleEditFormChange('notes', e.target.value)}
+                    rows={3}
+                    className="input resize-none"
+                  />
+                </div>
+
+                {/* Aircraft & Applications */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wider">
+                      Aircraft & Applications
+                    </h3>
+                    <button
+                      type="button"
+                      onClick={handleAddAircraft}
+                      className="flex items-center gap-1.5 text-sm text-aerospace-600 hover:text-aerospace-700 font-medium"
+                    >
+                      <PlusCircle className="w-4 h-4" />
+                      Add Aircraft
+                    </button>
+                  </div>
+
+                  <div className="space-y-4">
+                    {editAircraft.map((aircraft, acIndex) => (
+                      <div
+                        key={acIndex}
+                        className="p-4 border border-slate-200 rounded-xl bg-slate-50"
+                      >
+                        <div className="flex items-center gap-3 mb-3">
+                          <input
+                            type="text"
+                            value={aircraft.name}
+                            onChange={(e) => handleAircraftNameChange(acIndex, e.target.value)}
+                            placeholder="Aircraft name (e.g., 737 MAX)"
+                            className="input flex-1"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveAircraft(acIndex)}
+                            className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                            title="Remove aircraft"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <p className="text-xs font-medium text-slate-500 uppercase tracking-wider">
+                              Applications
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => handleAddApplication(acIndex)}
+                              className="text-xs text-aerospace-600 hover:text-aerospace-700 font-medium"
+                            >
+                              + Add Application
+                            </button>
+                          </div>
+
+                          {aircraft.applications.map((app, appIndex) => (
+                            <div key={appIndex} className="flex items-center gap-2">
+                              <input
+                                type="text"
+                                value={app.name}
+                                onChange={(e) =>
+                                  handleApplicationChange(acIndex, appIndex, 'name', e.target.value)
+                                }
+                                placeholder="Application name"
+                                className="input flex-1 text-sm"
+                              />
+                              <select
+                                value={app.supplier}
+                                onChange={(e) =>
+                                  handleApplicationChange(acIndex, appIndex, 'supplier', e.target.value)
+                                }
+                                className="input w-32 text-sm"
+                              >
+                                <option value="AutoValve">AutoValve</option>
+                                <option value="Prospect">Prospect</option>
+                                <option value="Competitor">Competitor</option>
+                              </select>
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveApplication(acIndex, appIndex)}
+                                className="p-1.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded transition-colors"
+                                title="Remove application"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+
+                    {editAircraft.length === 0 && (
+                      <div className="text-center py-8 border-2 border-dashed border-slate-200 rounded-xl">
+                        <p className="text-slate-500 text-sm">No aircraft added yet</p>
+                        <button
+                          type="button"
+                          onClick={handleAddAircraft}
+                          className="mt-2 text-sm text-aerospace-600 hover:text-aerospace-700 font-medium"
+                        >
+                          Add your first aircraft
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="sticky bottom-0 bg-white border-t border-slate-200 p-6 rounded-b-2xl flex gap-3">
+                <button
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="btn-secondary flex-1"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSaveCustomer}
+                  className="btn-primary flex-1 flex items-center justify-center gap-2"
+                >
+                  <Save className="w-4 h-4" />
+                  Save Changes
+                </button>
               </div>
             </div>
           </div>
