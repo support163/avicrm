@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Search,
   Plus,
@@ -12,8 +12,10 @@ import {
   X,
   LayoutGrid,
   List,
+  Loader2,
+  AlertCircle,
 } from 'lucide-react';
-import { customers as initialCustomers } from '../data/mockData';
+import { customerAPI, aircraftAPI, type AircraftEntry } from '../api/client';
 import type { Customer, IndustryType } from '../types';
 
 const industryIcons = {
@@ -28,150 +30,39 @@ const industryColors = {
   helicopter: 'bg-emerald-100 text-emerald-700 border-emerald-200',
 };
 
-// Application types for valve products
-type Application = {
-  name: string;
-  supplier: 'AutoValve' | 'Prospect' | 'Competitor';
-};
-
-type AircraftEntry = {
-  name: string;
-  applications: Application[];
-};
-
-// Aircraft data mapped to customers with applications and suppliers
-const customerAircraft: Record<string, AircraftEntry[]> = {
-  '1': [ // Boeing
-    { name: '737 MAX', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Check Valves', supplier: 'Competitor' }] },
-    { name: '747', applications: [{ name: 'Flow Control Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
-    { name: '767', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'Competitor' }] },
-    { name: '777', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Gravity Fuel Fill Caps', supplier: 'AutoValve' }] },
-    { name: '787 Dreamliner', applications: [{ name: 'Float Arm Style Valves', supplier: 'AutoValve' }, { name: 'Solenoid Activated Valves', supplier: 'AutoValve' }] },
-  ],
-  '2': [ // Airbus
-    { name: 'A319', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Check Valves', supplier: 'AutoValve' }] },
-    { name: 'A320', applications: [{ name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
-    { name: 'A321', applications: [{ name: 'Flow Control Valves', supplier: 'AutoValve' }, { name: 'Hydraulic Control Valves', supplier: 'Competitor' }] },
-    { name: 'A320neo', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Gravity Fuel Fill Caps', supplier: 'AutoValve' }] },
-    { name: 'A330', applications: [{ name: 'Float Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'AutoValve' }] },
-    { name: 'A350', applications: [{ name: 'Solenoid Activated Valves', supplier: 'AutoValve' }, { name: 'Tank Mounted Valves', supplier: 'AutoValve' }] },
-    { name: 'A380', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Split Butterfly Check Valves', supplier: 'Competitor' }] },
-  ],
-  '3': [ // Embraer
-    { name: 'E170', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }] },
-    { name: 'E190', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
-    { name: 'E195', applications: [{ name: 'Float Valves', supplier: 'AutoValve' }, { name: 'Hydraulic Control Valves', supplier: 'AutoValve' }] },
-    { name: 'E2 Series', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Gravity Fuel Fill Caps', supplier: 'AutoValve' }] },
-    { name: 'Phenom 100/300', applications: [{ name: 'Solenoid Activated Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'AutoValve' }] },
-    { name: 'Praetor 500/600', applications: [{ name: 'Flow Control Valves', supplier: 'AutoValve' }, { name: 'Tank Mounted Valves', supplier: 'AutoValve' }] },
-  ],
-  '4': [ // Bombardier
-    { name: 'Global 7500', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }] },
-    { name: 'Global 8000', applications: [{ name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
-    { name: 'Challenger 350', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Float Valves', supplier: 'AutoValve' }] },
-    { name: 'Challenger 650', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Gravity Fuel Fill Caps', supplier: 'AutoValve' }] },
-  ],
-  '5': [ // COMAC
-    { name: 'C919', applications: [{ name: 'Shut-Off Valves', supplier: 'Prospect' }, { name: 'Drain Valves', supplier: 'Prospect' }, { name: 'Check Valves', supplier: 'Competitor' }] },
-    { name: 'ARJ21', applications: [{ name: 'Flow Control Valves', supplier: 'Prospect' }, { name: 'Pressure Vent Valves', supplier: 'Competitor' }] },
-  ],
-  '6': [ // Gulfstream
-    { name: 'G400', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }] },
-    { name: 'G500', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Hydraulic Control Valves', supplier: 'AutoValve' }] },
-    { name: 'G600', applications: [{ name: 'Float Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
-    { name: 'G650', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Gravity Fuel Fill Caps', supplier: 'AutoValve' }] },
-    { name: 'G700', applications: [{ name: 'Solenoid Activated Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'AutoValve' }] },
-    { name: 'G800', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Tank Mounted Valves', supplier: 'AutoValve' }] },
-  ],
-  '7': [ // Dassault
-    { name: 'Falcon 6X', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Check Valves', supplier: 'AutoValve' }] },
-    { name: 'Falcon 8X', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Float Valves', supplier: 'AutoValve' }] },
-    { name: 'Falcon 10X', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
-  ],
-  '8': [ // Textron/Cessna
-    { name: 'Citation CJ Series', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }] },
-    { name: 'Citation Latitude', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Float Valves', supplier: 'AutoValve' }] },
-    { name: 'Citation Longitude', applications: [{ name: 'Hydraulic Control Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
-    { name: 'Caravan', applications: [{ name: 'Gravity Fuel Fill Caps', supplier: 'AutoValve' }, { name: 'Gravity Oil Fill Caps', supplier: 'AutoValve' }] },
-  ],
-  '9': [ // Airbus Helicopters
-    { name: 'H125', applications: [{ name: 'Hydraulic Control Valves', supplier: 'AutoValve' }, { name: 'Check Valves', supplier: 'AutoValve' }] },
-    { name: 'H145', applications: [{ name: 'Float Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }] },
-    { name: 'H160', applications: [{ name: 'Pressure Vent Valves', supplier: 'AutoValve' }, { name: 'Shut-Off Valves', supplier: 'AutoValve' }] },
-    { name: 'Tiger', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'AutoValve' }] },
-    { name: 'NH90', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Solenoid Activated Valves', supplier: 'AutoValve' }] },
-  ],
-  '10': [ // Bell
-    { name: 'Bell 407', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }] },
-    { name: 'Bell 429', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Float Valves', supplier: 'AutoValve' }] },
-    { name: 'Bell 505', applications: [{ name: 'Hydraulic Control Valves', supplier: 'AutoValve' }, { name: 'Gravity Fuel Fill Caps', supplier: 'AutoValve' }] },
-    { name: 'V-22 Osprey', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'Competitor' }] },
-    { name: 'V-280 Valor', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Solenoid Activated Valves', supplier: 'AutoValve' }] },
-  ],
-  '11': [ // Sikorsky
-    { name: 'UH-60 Black Hawk', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'AutoValve' }, { name: 'Check Valves', supplier: 'AutoValve' }] },
-    { name: 'CH-53K King Stallion', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
-    { name: 'S-76', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Float Valves', supplier: 'AutoValve' }] },
-    { name: 'S-92', applications: [{ name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Solenoid Activated Valves', supplier: 'AutoValve' }] },
-  ],
-  '12': [ // Leonardo
-    { name: 'AW109', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }] },
-    { name: 'AW139', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Hydraulic Control Valves', supplier: 'AutoValve' }] },
-    { name: 'AW169', applications: [{ name: 'Float Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
-    { name: 'AW609', applications: [{ name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }] },
-    { name: 'AW101', applications: [{ name: 'Relief/Dump Valves', supplier: 'AutoValve' }, { name: 'Tank Mounted Valves', supplier: 'AutoValve' }] },
-    { name: 'AW159 Wildcat', applications: [{ name: 'Solenoid Activated Valves', supplier: 'AutoValve' }, { name: 'Gravity Fuel Fill Caps', supplier: 'AutoValve' }] },
-  ],
-  '13': [ // Lockheed Martin
-    { name: 'F-35 Lightning II', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'AutoValve' }, { name: 'Control Valves', supplier: 'AutoValve' }] },
-    { name: 'F-16 Fighting Falcon', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Check Valves', supplier: 'AutoValve' }] },
-    { name: 'C-130J Super Hercules', applications: [{ name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }, { name: 'Float Valves', supplier: 'AutoValve' }] },
-  ],
-  '14': [ // Northrop Grumman
-    { name: 'RQ-4 Global Hawk', applications: [{ name: 'Flow Control Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
-    { name: 'MQ-4C Triton', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }] },
-    { name: 'B-21 Raider', applications: [{ name: 'Hydraulic Regulator Valves', supplier: 'AutoValve' }, { name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }, { name: 'Tank Mounted Valves', supplier: 'AutoValve' }] },
-  ],
-  '15': [ // General Atomics
-    { name: 'MQ-9 Reaper', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Check Valves', supplier: 'AutoValve' }] },
-    { name: 'MQ-9B SkyGuardian', applications: [{ name: 'Flow Control Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
-    { name: 'MQ-1C Gray Eagle', applications: [{ name: 'Float Valves', supplier: 'AutoValve' }, { name: 'Solenoid Activated Valves', supplier: 'AutoValve' }] },
-    { name: 'Avenger', applications: [{ name: 'Hydraulic Control Valves', supplier: 'AutoValve' }, { name: 'Relief/Dump Valves', supplier: 'AutoValve' }] },
-  ],
-  '16': [ // Anduril
-    { name: 'Ghost', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
-    { name: 'Altius-600', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Flow Control Valves', supplier: 'AutoValve' }] },
-    { name: 'Altius-700', applications: [{ name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Float Valves', supplier: 'AutoValve' }] },
-    { name: 'YFQ-44A (CCA)', applications: [{ name: 'Hydraulic Control Valves', supplier: 'AutoValve' }, { name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }] },
-  ],
-  '17': [ // Kratos
-    { name: 'XQ-58A Valkyrie', applications: [{ name: 'Shut-Off Valves', supplier: 'Prospect' }, { name: 'Check Valves', supplier: 'Competitor' }, { name: 'Hydraulic Control Valves', supplier: 'Prospect' }] },
-    { name: 'BQM-167 Target Drones', applications: [{ name: 'Drain Valves', supplier: 'Prospect' }, { name: 'Pressure Vent Valves', supplier: 'Competitor' }] },
-  ],
-  '18': [ // AeroVironment
-    { name: 'Switchblade 300/600', applications: [{ name: 'Check Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
-    { name: 'RQ-11 Raven', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Flow Control Valves', supplier: 'AutoValve' }] },
-    { name: 'RQ-20 Puma', applications: [{ name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Float Valves', supplier: 'AutoValve' }] },
-  ],
-  '19': [ // Baykar
-    { name: 'Bayraktar TB2', applications: [{ name: 'Shut-Off Valves', supplier: 'AutoValve' }, { name: 'Drain Valves', supplier: 'AutoValve' }, { name: 'Check Valves', supplier: 'AutoValve' }] },
-    { name: 'Bayraktar TB3', applications: [{ name: 'Flow Control Valves', supplier: 'AutoValve' }, { name: 'Pressure Vent Valves', supplier: 'AutoValve' }] },
-    { name: 'Bayraktar Akıncı', applications: [{ name: 'Hydraulic Control Valves', supplier: 'AutoValve' }, { name: 'Remote Motor Operated Valves', supplier: 'AutoValve' }] },
-  ],
-  '20': [ // IAI
-    { name: 'Heron', applications: [{ name: 'Shut-Off Valves', supplier: 'Competitor' }, { name: 'Check Valves', supplier: 'Competitor' }] },
-    { name: 'Heron TP (Eitan)', applications: [{ name: 'Drain Valves', supplier: 'Competitor' }, { name: 'Pressure Vent Valves', supplier: 'Competitor' }] },
-    { name: 'Harop', applications: [{ name: 'Flow Control Valves', supplier: 'Competitor' }, { name: 'Float Valves', supplier: 'Prospect' }] },
-  ],
-};
-
 export default function Customers() {
-  const [customers] = useState<Customer[]>(initialCustomers);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [customerAircraft, setCustomerAircraft] = useState<Record<string, AircraftEntry[]>>({});
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterIndustry, setFilterIndustry] = useState<IndustryType | 'all'>('all');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
+
+  // Fetch data from API
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const [customersData, aircraftData] = await Promise.all([
+        customerAPI.getAll(),
+        aircraftAPI.getAll()
+      ]);
+      setCustomers(customersData);
+      setCustomerAircraft(aircraftData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load data');
+      console.error('Error fetching data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const filteredCustomers = customers.filter((customer) => {
     const aircraftList = customerAircraft[customer.id] || [];
@@ -199,6 +90,28 @@ export default function Customers() {
         return 'bg-slate-100 text-slate-700';
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 animate-spin text-aerospace-600" />
+        <span className="ml-2 text-slate-600">Loading customers...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96">
+        <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
+        <h2 className="text-xl font-semibold text-slate-900 mb-2">Failed to Load</h2>
+        <p className="text-slate-600 mb-4">{error}</p>
+        <button onClick={fetchData} className="btn-primary">
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

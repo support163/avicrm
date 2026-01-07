@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import {
   DollarSign,
@@ -9,70 +10,17 @@ import {
   Compass,
   ArrowUpRight,
   ArrowDownRight,
+  Loader2,
+  AlertCircle,
 } from 'lucide-react';
-import { dashboardStats, opportunities, customers } from '../data/mockData';
+import { dashboardAPI, opportunityAPI, customerAPI } from '../api/client';
+import type { DashboardStats, Opportunity, Customer } from '../types';
 
-const stats = [
-  {
-    name: 'Total Revenue',
-    value: `$${(dashboardStats.totalRevenue / 1000000).toFixed(2)}M`,
-    change: '+12.5%',
-    changeType: 'positive',
-    icon: DollarSign,
-    color: 'bg-emerald-500',
-  },
-  {
-    name: 'Active Customers',
-    value: dashboardStats.activeCustomers.toString(),
-    change: '+2',
-    changeType: 'positive',
-    icon: Users,
-    color: 'bg-blue-500',
-  },
-  {
-    name: 'Open Opportunities',
-    value: dashboardStats.openOpportunities.toString(),
-    change: '-1',
-    changeType: 'neutral',
-    icon: Target,
-    color: 'bg-amber-500',
-  },
-  {
-    name: 'Pipeline Value',
-    value: `$${(dashboardStats.pipelineValue / 1000000).toFixed(1)}M`,
-    change: '+24.3%',
-    changeType: 'positive',
-    icon: TrendingUp,
-    color: 'bg-purple-500',
-  },
-];
-
-const industryData = [
-  {
-    name: 'Airplane',
-    icon: Plane,
-    value: dashboardStats.industryBreakdown.airplane,
-    color: 'bg-blue-500',
-    textColor: 'text-blue-600',
-    bgLight: 'bg-blue-50',
-  },
-  {
-    name: 'Drone',
-    icon: Rocket,
-    value: dashboardStats.industryBreakdown.drone,
-    color: 'bg-purple-500',
-    textColor: 'text-purple-600',
-    bgLight: 'bg-purple-50',
-  },
-  {
-    name: 'Helicopter',
-    icon: Compass,
-    value: dashboardStats.industryBreakdown.helicopter,
-    color: 'bg-emerald-500',
-    textColor: 'text-emerald-600',
-    bgLight: 'bg-emerald-50',
-  },
-];
+const industryIcons = {
+  airplane: Plane,
+  drone: Rocket,
+  helicopter: Compass,
+};
 
 const stageColors: Record<string, string> = {
   lead: 'bg-slate-100 text-slate-700',
@@ -93,11 +41,125 @@ const stageLabels: Record<string, string> = {
 };
 
 export default function Dashboard() {
+  const [stats, setStats] = useState<DashboardStats | null>(null);
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const [statsData, oppsData, customersData] = await Promise.all([
+        dashboardAPI.getStats(),
+        opportunityAPI.getAll(),
+        customerAPI.getAll()
+      ]);
+      setStats(statsData);
+      setOpportunities(oppsData);
+      setCustomers(customersData);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load dashboard');
+      console.error('Error fetching dashboard:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 animate-spin text-aerospace-600" />
+        <span className="ml-2 text-slate-600">Loading dashboard...</span>
+      </div>
+    );
+  }
+
+  if (error || !stats) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96">
+        <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
+        <h2 className="text-xl font-semibold text-slate-900 mb-2">Failed to Load</h2>
+        <p className="text-slate-600 mb-4">{error || 'No data available'}</p>
+        <button onClick={fetchData} className="btn-primary">
+          Retry
+        </button>
+      </div>
+    );
+  }
+
   const recentOpportunities = opportunities.slice(0, 5);
-  const totalIndustryValue = Object.values(dashboardStats.industryBreakdown).reduce(
+  const totalIndustryValue = Object.values(stats.industryBreakdown).reduce(
     (a, b) => a + b,
     0
   );
+
+  const statCards = [
+    {
+      name: 'Total Revenue',
+      value: `$${(stats.totalRevenue / 1000000).toFixed(2)}M`,
+      change: '+12.5%',
+      changeType: 'positive',
+      icon: DollarSign,
+      color: 'bg-emerald-500',
+    },
+    {
+      name: 'Active Customers',
+      value: stats.activeCustomers.toString(),
+      change: '+2',
+      changeType: 'positive',
+      icon: Users,
+      color: 'bg-blue-500',
+    },
+    {
+      name: 'Open Opportunities',
+      value: stats.openOpportunities.toString(),
+      change: '-1',
+      changeType: 'neutral',
+      icon: Target,
+      color: 'bg-amber-500',
+    },
+    {
+      name: 'Pipeline Value',
+      value: `$${(stats.pipelineValue / 1000000).toFixed(1)}M`,
+      change: '+24.3%',
+      changeType: 'positive',
+      icon: TrendingUp,
+      color: 'bg-purple-500',
+    },
+  ];
+
+  const industryData = [
+    {
+      name: 'Airplane',
+      icon: Plane,
+      value: stats.industryBreakdown.airplane,
+      color: 'bg-blue-500',
+      textColor: 'text-blue-600',
+      bgLight: 'bg-blue-50',
+    },
+    {
+      name: 'Drone',
+      icon: Rocket,
+      value: stats.industryBreakdown.drone,
+      color: 'bg-purple-500',
+      textColor: 'text-purple-600',
+      bgLight: 'bg-purple-50',
+    },
+    {
+      name: 'Helicopter',
+      icon: Compass,
+      value: stats.industryBreakdown.helicopter,
+      color: 'bg-emerald-500',
+      textColor: 'text-emerald-600',
+      bgLight: 'bg-emerald-50',
+    },
+  ];
 
   return (
     <div className="space-y-8">
@@ -111,7 +173,7 @@ export default function Dashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat) => (
+        {statCards.map((stat) => (
           <div key={stat.name} className="card hover:shadow-md transition-shadow duration-200">
             <div className="flex items-start justify-between">
               <div>
@@ -150,7 +212,7 @@ export default function Dashboard() {
           </h2>
           <div className="space-y-4">
             {industryData.map((industry) => {
-              const percentage = (industry.value / totalIndustryValue) * 100;
+              const percentage = totalIndustryValue > 0 ? (industry.value / totalIndustryValue) * 100 : 0;
               return (
                 <div key={industry.name} className="space-y-2">
                   <div className="flex items-center justify-between">
@@ -180,13 +242,13 @@ export default function Dashboard() {
             <div className="flex items-center justify-between">
               <span className="text-sm text-slate-500">Conversion Rate</span>
               <span className="text-2xl font-bold text-aerospace-600">
-                {dashboardStats.conversionRate.toFixed(1)}%
+                {stats.conversionRate.toFixed(1)}%
               </span>
             </div>
             <div className="mt-2 h-2 bg-slate-100 rounded-full overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-aerospace-500 to-aerospace-600 rounded-full"
-                style={{ width: `${dashboardStats.conversionRate}%` }}
+                style={{ width: `${stats.conversionRate}%` }}
               />
             </div>
           </div>

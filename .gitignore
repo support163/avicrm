@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Database files (NOT backed up in git - use backup/restore API)
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/backups/*
+!data/backups/.gitkeep
+!data/.gitkeep

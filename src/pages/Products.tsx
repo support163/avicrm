@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Search,
   Plus,
@@ -10,8 +10,10 @@ import {
   Rocket,
   Compass,
   ChevronRight,
+  Loader2,
+  AlertCircle,
 } from 'lucide-react';
-import { products as initialProducts } from '../data/mockData';
+import { productAPI } from '../api/client';
 import type { Product, IndustryType } from '../types';
 
 const industryIcons = {
@@ -32,11 +34,32 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function Products() {
-  const [products] = useState<Product[]>(initialProducts);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [filterIndustry, setFilterIndustry] = useState<IndustryType | 'all'>('all');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  // Fetch products from API
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await productAPI.getAll();
+      setProducts(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load products');
+      console.error('Error fetching products:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const categories = [...new Set(products.map((p) => p.category))];
 
@@ -50,6 +73,28 @@ export default function Products() {
       filterIndustry === 'all' || product.industries.includes(filterIndustry);
     return matchesSearch && matchesCategory && matchesIndustry;
   });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 animate-spin text-aerospace-600" />
+        <span className="ml-2 text-slate-600">Loading products...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96">
+        <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
+        <h2 className="text-xl font-semibold text-slate-900 mb-2">Failed to Load</h2>
+        <p className="text-slate-600 mb-4">{error}</p>
+        <button onClick={fetchProducts} className="btn-primary">
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">

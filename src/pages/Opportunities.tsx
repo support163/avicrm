@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Search,
   Plus,
@@ -10,8 +10,10 @@ import {
   Rocket,
   Compass,
   X,
+  Loader2,
+  AlertCircle,
 } from 'lucide-react';
-import { opportunities as initialOpportunities } from '../data/mockData';
+import { opportunityAPI } from '../api/client';
 import type { Opportunity, OpportunityStage, IndustryType } from '../types';
 
 const stageConfig: Record<
@@ -72,12 +74,66 @@ const stages: OpportunityStage[] = [
 ];
 
 export default function Opportunities() {
-  const [opportunities] = useState<Opportunity[]>(initialOpportunities);
+  const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStage, setFilterStage] = useState<OpportunityStage | 'all'>('all');
   const [filterIndustry, setFilterIndustry] = useState<IndustryType | 'all'>('all');
   const [viewMode, setViewMode] = useState<'pipeline' | 'list'>('pipeline');
   const [selectedOpp, setSelectedOpp] = useState<Opportunity | null>(null);
+  const [saving, setSaving] = useState(false);
+
+  // Fetch opportunities from API
+  useEffect(() => {
+    fetchOpportunities();
+  }, []);
+
+  const fetchOpportunities = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await opportunityAPI.getAll();
+      setOpportunities(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load opportunities');
+      console.error('Error fetching opportunities:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleUpdateOpportunity = async (id: string, updates: Partial<Opportunity>) => {
+    try {
+      setSaving(true);
+      const updated = await opportunityAPI.update(id, updates);
+      setOpportunities(opps => opps.map(o => o.id === id ? updated : o));
+      if (selectedOpp?.id === id) {
+        setSelectedOpp(updated);
+      }
+    } catch (err) {
+      console.error('Error updating opportunity:', err);
+      alert('Failed to update opportunity');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleStageChange = async (oppId: string, newStage: OpportunityStage) => {
+    // Update probability based on stage
+    const probabilityMap: Record<OpportunityStage, number> = {
+      lead: 10,
+      qualified: 25,
+      proposal: 50,
+      negotiation: 75,
+      closed_won: 100,
+      closed_lost: 0,
+    };
+    await handleUpdateOpportunity(oppId, {
+      stage: newStage,
+      probability: probabilityMap[newStage]
+    });
+  };
 
   const filteredOpportunities = opportunities.filter((opp) => {
     const matchesSearch =
@@ -97,6 +153,28 @@ export default function Opportunities() {
       .filter((opp) => !['closed_won', 'closed_lost'].includes(opp.stage))
       .reduce((sum, opp) => sum + opp.value * (opp.probability / 100), 0);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-8 h-8 animate-spin text-aerospace-600" />
+        <span className="ml-2 text-slate-600">Loading opportunities...</span>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-96">
+        <AlertCircle className="w-12 h-12 text-red-500 mb-4" />
+        <h2 className="text-xl font-semibold text-slate-900 mb-2">Failed to Load</h2>
+        <p className="text-slate-600 mb-4">{error}</p>
+        <button onClick={fetchOpportunities} className="btn-primary">
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -488,13 +566,18 @@ export default function Opportunities() {
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50">
                   <p className="text-xs text-slate-500 uppercase tracking-wider">Stage</p>
-                  <span
-                    className={`mt-1 inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                      stageConfig[selectedOpp.stage].bgColor
-                    } ${stageConfig[selectedOpp.stage].color}`}
+                  <select
+                    value={selectedOpp.stage}
+                    onChange={(e) => handleStageChange(selectedOpp.id, e.target.value as OpportunityStage)}
+                    disabled={saving}
+                    className="mt-1 w-full p-2 rounded-lg border border-slate-200 text-sm font-medium"
                   >
-                    {stageConfig[selectedOpp.stage].label}
-                  </span>
+                    {stages.map((stage) => (
+                      <option key={stage} value={stage}>
+                        {stageConfig[stage].label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                 <div className="p-4 rounded-xl bg-slate-50">
                   <p className="text-xs text-slate-500 uppercase tracking-wider">Expected Close</p>
@@ -536,8 +619,15 @@ export default function Opportunities() {
               </div>
 
               <div className="mt-6 flex gap-3">
-                <button className="btn-primary flex-1">Edit Opportunity</button>
-                <button className="btn-secondary flex-1">Update Stage</button>
+                <button className="btn-primary flex-1" disabled={saving}>
+                  {saving ? 'Saving...' : 'Edit Opportunity'}
+                </button>
+                <button
+                  className="btn-secondary flex-1"
+                  onClick={() => setSelectedOpp(null)}
+                >
+                  Close
+                </button>
               </div>
             </div>
           </div>
