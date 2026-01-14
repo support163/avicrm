@@ -156,7 +156,12 @@ export default function Opportunities() {
             <div>
               <p className="text-sm text-slate-500">Closing This Month</p>
               <p className="text-2xl font-bold text-slate-900">
-                {filteredOpportunities.filter((o) => !o.stage.startsWith('closed')).length}
+                {filteredOpportunities.filter((o) => {
+                  if (o.stage.startsWith('closed')) return false;
+                  const closeDate = new Date(o.expectedCloseDate);
+                  const now = new Date();
+                  return closeDate.getMonth() === now.getMonth() && closeDate.getFullYear() === now.getFullYear();
+                }).length}
               </p>
             </div>
           </div>
