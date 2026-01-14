@@ -32,11 +32,26 @@ const stageLabels: Record<string, string> = {
 };
 
 export default function Dashboard() {
-  const { stats, loading: statsLoading } = useDashboardStats();
-  const { opportunities, loading: oppsLoading } = useOpportunities();
-  const { customers, loading: customersLoading } = useCustomers();
+  const { stats, loading: statsLoading, error: statsError } = useDashboardStats();
+  const { opportunities, loading: oppsLoading, error: oppsError } = useOpportunities();
+  const { customers, loading: customersLoading, error: customersError } = useCustomers();
 
   const loading = statsLoading || oppsLoading || customersLoading;
+  const error = statsError || oppsError || customersError;
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center p-8 bg-red-50 rounded-xl max-w-lg">
+          <h2 className="text-xl font-bold text-red-700 mb-2">Connection Error</h2>
+          <p className="text-red-600 mb-4">{error}</p>
+          <p className="text-sm text-red-500">
+            Please check: 1) Supabase tables are created, 2) API key is correct
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const statsCards = [
     {
