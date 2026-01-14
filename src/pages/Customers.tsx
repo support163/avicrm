@@ -12,9 +12,10 @@ import {
   X,
   LayoutGrid,
   List,
+  Loader2,
 } from 'lucide-react';
-import { customers as initialCustomers } from '../data/mockData';
-import type { Customer, IndustryType } from '../types';
+import { useCustomers } from '../hooks/useSupabase';
+import type { Customer, IndustryType } from '../types/database';
 
 const industryIcons = {
   airplane: Plane,
@@ -166,7 +167,7 @@ const customerAircraft: Record<string, AircraftEntry[]> = {
 };
 
 export default function Customers() {
-  const [customers] = useState<Customer[]>(initialCustomers);
+  const { customers, loading } = useCustomers();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterIndustry, setFilterIndustry] = useState<IndustryType | 'all'>('all');
   const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
@@ -176,8 +177,8 @@ export default function Customers() {
   const filteredCustomers = customers.filter((customer) => {
     const aircraftList = customerAircraft[customer.id] || [];
     const matchesSearch =
-      customer.companyName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.contactName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.company_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.contact_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       aircraftList.some(ac =>
         ac.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -186,6 +187,14 @@ export default function Customers() {
     const matchesIndustry = filterIndustry === 'all' || customer.industry === filterIndustry;
     return matchesSearch && matchesIndustry;
   });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-aerospace-600" />
+      </div>
+    );
+  }
 
   const getSupplierBadge = (supplier: string) => {
     switch (supplier) {
@@ -323,9 +332,9 @@ export default function Customers() {
                           {acIndex === 0 && appIndex === 0 ? (
                             <div className="flex items-center gap-2">
                               <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-aerospace-400 to-aerospace-600 flex items-center justify-center text-white font-bold text-xs shadow-md">
-                                {customer.companyName.substring(0, 2).toUpperCase()}
+                                {customer.company_name.substring(0, 2).toUpperCase()}
                               </div>
-                              <p className="font-semibold text-slate-900 text-sm">{customer.companyName}</p>
+                              <p className="font-semibold text-slate-900 text-sm">{customer.company_name}</p>
                             </div>
                           ) : null}
                         </td>
@@ -360,7 +369,7 @@ export default function Customers() {
                         <td className="px-4 py-3">
                           {acIndex === 0 && appIndex === 0 ? (
                             <span className="text-sm text-slate-700 font-medium">
-                              {customer.contactName}
+                              {customer.contact_name}
                             </span>
                           ) : null}
                         </td>
@@ -403,13 +412,13 @@ export default function Customers() {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-aerospace-400 to-aerospace-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-aerospace-500/20">
-                      {customer.companyName.substring(0, 2).toUpperCase()}
+                      {customer.company_name.substring(0, 2).toUpperCase()}
                     </div>
                     <div>
                       <h3 className="font-semibold text-slate-900 group-hover:text-aerospace-600 transition-colors">
-                        {customer.companyName}
+                        {customer.company_name}
                       </h3>
-                      <p className="text-sm text-slate-500">{customer.contactName}</p>
+                      <p className="text-sm text-slate-500">{customer.contact_name}</p>
                     </div>
                   </div>
                   <button className="p-2 hover:bg-slate-100 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity">
@@ -497,13 +506,13 @@ export default function Customers() {
 
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-aerospace-400 to-aerospace-600 flex items-center justify-center text-white font-bold text-xl shadow-lg">
-                  {selectedCustomer.companyName.substring(0, 2).toUpperCase()}
+                  {selectedCustomer.company_name.substring(0, 2).toUpperCase()}
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-slate-900">
-                    {selectedCustomer.companyName}
+                    {selectedCustomer.company_name}
                   </h2>
-                  <p className="text-slate-500">{selectedCustomer.contactName}</p>
+                  <p className="text-slate-500">{selectedCustomer.contact_name}</p>
                 </div>
               </div>
 
@@ -567,7 +576,7 @@ export default function Customers() {
                 <div className="p-4 rounded-xl bg-slate-50">
                   <p className="text-xs text-slate-500 uppercase tracking-wider">Customer Since</p>
                   <p className="mt-1 text-sm text-slate-700">
-                    {new Date(selectedCustomer.createdAt).toLocaleDateString('en-US', {
+                    {new Date(selectedCustomer.created_at).toLocaleDateString('en-US', {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
