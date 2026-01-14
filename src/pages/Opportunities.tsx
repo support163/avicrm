@@ -10,9 +10,11 @@ import {
   Rocket,
   Compass,
   X,
+  Loader2,
 } from 'lucide-react';
-import { opportunities as initialOpportunities } from '../data/mockData';
-import type { Opportunity, OpportunityStage, IndustryType } from '../types';
+import { useOpportunities } from '../hooks/useSupabase';
+import type { OpportunityWithProducts } from '../types/database';
+import type { OpportunityStage, IndustryType } from '../types/database';
 
 const stageConfig: Record<
   OpportunityStage,
@@ -72,17 +74,17 @@ const stages: OpportunityStage[] = [
 ];
 
 export default function Opportunities() {
-  const [opportunities] = useState<Opportunity[]>(initialOpportunities);
+  const { opportunities, loading } = useOpportunities();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStage, setFilterStage] = useState<OpportunityStage | 'all'>('all');
   const [filterIndustry, setFilterIndustry] = useState<IndustryType | 'all'>('all');
   const [viewMode, setViewMode] = useState<'pipeline' | 'list'>('pipeline');
-  const [selectedOpp, setSelectedOpp] = useState<Opportunity | null>(null);
+  const [selectedOpp, setSelectedOpp] = useState<OpportunityWithProducts | null>(null);
 
   const filteredOpportunities = opportunities.filter((opp) => {
     const matchesSearch =
       opp.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      opp.customerName.toLowerCase().includes(searchTerm.toLowerCase());
+      opp.customer_name.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStage = filterStage === 'all' || opp.stage === filterStage;
     const matchesIndustry = filterIndustry === 'all' || opp.industry === filterIndustry;
     return matchesSearch && matchesStage && matchesIndustry;
@@ -97,6 +99,14 @@ export default function Opportunities() {
       .filter((opp) => !['closed_won', 'closed_lost'].includes(opp.stage))
       .reduce((sum, opp) => sum + opp.value * (opp.probability / 100), 0);
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-aerospace-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -158,7 +168,7 @@ export default function Opportunities() {
               <p className="text-2xl font-bold text-slate-900">
                 {filteredOpportunities.filter((o) => {
                   if (o.stage.startsWith('closed')) return false;
-                  const closeDate = new Date(o.expectedCloseDate);
+                  const closeDate = new Date(o.expected_close_date);
                   const now = new Date();
                   return closeDate.getMonth() === now.getMonth() && closeDate.getFullYear() === now.getFullYear();
                 }).length}
@@ -303,13 +313,13 @@ export default function Opportunities() {
                         <h4 className="font-medium text-slate-900 text-sm line-clamp-2">
                           {opp.title}
                         </h4>
-                        <p className="text-xs text-slate-500 mt-1">{opp.customerName}</p>
+                        <p className="text-xs text-slate-500 mt-1">{opp.customer_name}</p>
                         <div className="mt-3 flex items-center justify-between">
                           <span className="text-xs text-slate-400">
                             {opp.probability}% prob.
                           </span>
                           <span className="text-xs text-slate-400">
-                            {new Date(opp.expectedCloseDate).toLocaleDateString('en-US', {
+                            {new Date(opp.expected_close_date).toLocaleDateString('en-US', {
                               month: 'short',
                               day: 'numeric',
                             })}
@@ -388,7 +398,7 @@ export default function Opportunities() {
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-slate-600">{opp.customerName}</td>
+                    <td className="px-6 py-4 text-slate-600">{opp.customer_name}</td>
                     <td className="px-6 py-4 font-semibold text-slate-900">
                       ${(opp.value / 1000).toFixed(0)}K
                     </td>
@@ -417,7 +427,7 @@ export default function Opportunities() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-slate-600">
-                      {new Date(opp.expectedCloseDate).toLocaleDateString('en-US', {
+                      {new Date(opp.expected_close_date).toLocaleDateString('en-US', {
                         month: 'short',
                         day: 'numeric',
                         year: 'numeric',
@@ -474,7 +484,7 @@ export default function Opportunities() {
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-slate-900">{selectedOpp.title}</h2>
-                  <p className="text-slate-500">{selectedOpp.customerName}</p>
+                  <p className="text-slate-500">{selectedOpp.customer_name}</p>
                 </div>
               </div>
 
@@ -504,7 +514,7 @@ export default function Opportunities() {
                 <div className="p-4 rounded-xl bg-slate-50">
                   <p className="text-xs text-slate-500 uppercase tracking-wider">Expected Close</p>
                   <p className="mt-1 text-lg font-semibold text-slate-900">
-                    {new Date(selectedOpp.expectedCloseDate).toLocaleDateString('en-US', {
+                    {new Date(selectedOpp.expected_close_date).toLocaleDateString('en-US', {
                       month: 'long',
                       day: 'numeric',
                       year: 'numeric',

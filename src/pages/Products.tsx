@@ -10,9 +10,11 @@ import {
   Rocket,
   Compass,
   ChevronRight,
+  Loader2,
 } from 'lucide-react';
-import { products as initialProducts } from '../data/mockData';
-import type { Product, IndustryType } from '../types';
+import { useProducts } from '../hooks/useSupabase';
+import type { Product } from '../types/database';
+import type { IndustryType } from '../types/database';
 
 const industryIcons = {
   airplane: Plane,
@@ -32,7 +34,7 @@ const categoryColors: Record<string, string> = {
 };
 
 export default function Products() {
-  const [products] = useState<Product[]>(initialProducts);
+  const { products, loading } = useProducts();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState<string>('all');
   const [filterIndustry, setFilterIndustry] = useState<IndustryType | 'all'>('all');
@@ -44,12 +46,20 @@ export default function Products() {
     const matchesSearch =
       product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       product.sku.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchTerm.toLowerCase());
+      (product.description?.toLowerCase().includes(searchTerm.toLowerCase()) ?? false);
     const matchesCategory = filterCategory === 'all' || product.category === filterCategory;
     const matchesIndustry =
       filterIndustry === 'all' || product.industries.includes(filterIndustry);
     return matchesSearch && matchesCategory && matchesIndustry;
   });
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="w-8 h-8 animate-spin text-aerospace-600" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -144,7 +154,7 @@ export default function Products() {
                       <p className="text-xl font-bold text-slate-900">
                         ${product.price.toLocaleString()}
                       </p>
-                      {product.inStock ? (
+                      {product.in_stock ? (
                         <span className="inline-flex items-center gap-1 text-xs text-emerald-600 font-medium">
                           <Check className="w-3.5 h-3.5" />
                           In Stock
@@ -233,7 +243,7 @@ export default function Products() {
                   <span className="text-2xl font-bold text-slate-900">
                     ${selectedProduct.price.toLocaleString()}
                   </span>
-                  {selectedProduct.inStock ? (
+                  {selectedProduct.in_stock ? (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-100 text-emerald-700 text-sm font-medium">
                       <Check className="w-4 h-4" />
                       In Stock
