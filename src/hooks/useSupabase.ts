@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { customers as mockCustomers, products as mockProducts, opportunities as mockOpportunities, dashboardStats as mockDashboardStats } from '../data/mockData';
 import type { Customer, Product, Opportunity, OpportunityWithCustomer, OpportunityWithProducts } from '../types/database';
 
 // Hook for fetching customers
@@ -15,6 +16,25 @@ export function useCustomers() {
   async function fetchCustomers() {
     try {
       setLoading(true);
+
+      if (!isSupabaseConfigured || !supabase) {
+        // Fall back to mock data
+        const mapped = mockCustomers.map(c => ({
+          id: c.id,
+          company_name: c.companyName,
+          contact_name: c.contactName,
+          email: c.email,
+          phone: c.phone,
+          industry: c.industry,
+          address: c.address,
+          created_at: c.createdAt,
+          notes: c.notes,
+          status: c.status
+        }));
+        setCustomers(mapped as Customer[]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('customers')
         .select('*')
@@ -45,6 +65,25 @@ export function useProducts() {
   async function fetchProducts() {
     try {
       setLoading(true);
+
+      if (!isSupabaseConfigured || !supabase) {
+        // Fall back to mock data
+        const mapped = mockProducts.map(p => ({
+          id: p.id,
+          name: p.name,
+          sku: p.sku,
+          description: p.description,
+          category: p.category,
+          price: p.price,
+          specifications: p.specifications,
+          industries: p.industries,
+          in_stock: p.inStock,
+          image_url: p.imageUrl
+        }));
+        setProducts(mapped as Product[]);
+        return;
+      }
+
       const { data, error } = await supabase
         .from('products')
         .select('*')
@@ -75,6 +114,31 @@ export function useOpportunities() {
   async function fetchOpportunities() {
     try {
       setLoading(true);
+
+      if (!isSupabaseConfigured || !supabase) {
+        // Fall back to mock data
+        const mapped = mockOpportunities.map(o => ({
+          id: o.id,
+          title: o.title,
+          customer_id: o.customerId,
+          customer_name: o.customerName,
+          stage: o.stage,
+          value: o.value,
+          probability: o.probability,
+          expected_close_date: o.expectedCloseDate,
+          created_at: o.createdAt,
+          notes: o.notes,
+          industry: o.industry,
+          products: o.products.map(p => ({
+            productId: p.productId,
+            productName: p.productName,
+            quantity: p.quantity,
+            price: p.price
+          }))
+        }));
+        setOpportunities(mapped as OpportunityWithProducts[]);
+        return;
+      }
 
       // Fetch opportunities with customer name from view
       const { data: oppsData, error: oppsError } = await supabase
@@ -133,6 +197,7 @@ export function useDashboardStats() {
     openOpportunities: 0,
     pipelineValue: 0,
     conversionRate: 0,
+    closingThisMonth: 0,
     industryBreakdown: {
       airplane: 0,
       drone: 0,
@@ -149,6 +214,20 @@ export function useDashboardStats() {
   async function fetchStats() {
     try {
       setLoading(true);
+
+      if (!isSupabaseConfigured || !supabase) {
+        // Fall back to mock data
+        setStats({
+          totalRevenue: mockDashboardStats.totalRevenue,
+          activeCustomers: mockDashboardStats.activeCustomers,
+          openOpportunities: mockDashboardStats.openOpportunities,
+          pipelineValue: mockDashboardStats.pipelineValue,
+          conversionRate: mockDashboardStats.conversionRate,
+          closingThisMonth: 0,
+          industryBreakdown: mockDashboardStats.industryBreakdown
+        });
+        return;
+      }
 
       // Fetch customers count
       const { count: activeCustomers, error: custError } = await supabase
@@ -178,6 +257,15 @@ export function useDashboardStats() {
         ? (closedWon.length / allClosed.length) * 100
         : 0;
 
+      // Calculate closing this month
+      const now = new Date();
+      const currentMonth = now.getMonth();
+      const currentYear = now.getFullYear();
+      const closingThisMonth = openOpps.filter(o => {
+        const closeDate = new Date(o.expected_close_date);
+        return closeDate.getMonth() === currentMonth && closeDate.getFullYear() === currentYear;
+      }).length;
+
       // Industry breakdown (from closed won)
       const industryBreakdown = {
         airplane: closedWon.filter(o => o.industry === 'airplane').reduce((sum, o) => sum + Number(o.value), 0),
@@ -191,6 +279,7 @@ export function useDashboardStats() {
         openOpportunities: openOpps.length,
         pipelineValue,
         conversionRate: Math.round(conversionRate * 10) / 10,
+        closingThisMonth,
         industryBreakdown
       });
     } catch (err) {
